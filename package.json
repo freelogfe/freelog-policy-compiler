@@ -1,10 +1,10 @@
 {
   "name": "freelog-policy-compiler",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "policy_lang": "0.0.13",
+    "policy_lang": "0.0.14",
     "underscore": "^1.8.3"
   },
   "devDependencies": {},
