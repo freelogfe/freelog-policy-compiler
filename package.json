@@ -1,5 +1,5 @@
 {
-  "name": "freelog-policy-compiler",
+  "name": "freelog_policy_compiler",
   "version": "0.0.2",
   "description": "",
   "main": "index.js",
