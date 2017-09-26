@@ -49,5 +49,5 @@ var re = compiler.compile(string1);
 console.log(re);
 // console.log(re.stringArray.join(' ').replace(/\n\s/g,'\n'));
 // console.log(re.policy_segments[0].state_transition_table);
-// console.log(JSON.stringify(re.policy_segments[0].state_transition_table));
+console.log(JSON.stringify(re.policy_segments[0].state_transition_table));
 console.log('end gen');

@@ -1,6 +1,7 @@
 const policy = require('policy_lang');
 const policyListener = policy.policyListener;
 let _ = require('underscore');
+
 //排列
 permute.permArr = [];
 permute.usedChars = [];
@@ -104,7 +105,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.segment_block.activatedStates = [];
     _.each( ctx.ID(), (state)=>{
         ctx.segment_block.activatedStates.push(state.getText());
-    })
+    });
   };
 
   exitAthorize_token_clause (ctx) {
@@ -233,7 +234,7 @@ class JSONGeneratorExtentionClass extends policyListener {
   exitRelative_date_event (ctx) {
     ctx.parentCtx.events = ctx.events;
   };
-  enterPrice_event(ctx) {
+  enterPricing_agreement_event(ctx) {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'pricingAgreement',
@@ -241,7 +242,7 @@ class JSONGeneratorExtentionClass extends policyListener {
       eventName: 'pricingAgreement'
     });
   };
-  exitPrice_event(ctx) {
+  exitPricing_agreement_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
 
@@ -259,10 +260,14 @@ class JSONGeneratorExtentionClass extends policyListener {
 
   enterSigning_event(ctx) {
     ctx.events = ctx.parentCtx.events;
+    let tempLicenseIds = [];
+    _.each( ctx.license_resource_id(), (licensId)=>{
+      tempLicenseIds.push(licensId.getText());
+    });
     ctx.events.push({
       type: 'signing',
-      params: [ctx.license_resource_id()[0].getText()],
-      eventName: 'signing_'+ctx.license_resource_id()[0].getText()
+      params: tempLicenseIds,
+      eventName: 'signing_'+tempLicenseIds.join('_')
     });
   };
   exitSigning_event(ctx) {
@@ -279,9 +284,9 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterContract_guaranty(ctx) {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
-      type: 'guarantyEvent',
-      params: 'tbd',
-      eventName: 'tbd'
+      type: 'contractGuaranty',
+      params: 'contractGuaranty_'+ ctx.INT()[0].getText() + '_' + ctx.INT()[1].getText()+ '_day',
+      eventName: 'contractGuaranty'
     });
   };
   exitContract_guaranty(ctx) {
@@ -292,7 +297,8 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'platformGuaranty',
-      params: [ctx.INT().getText()]
+      params: [ctx.INT().getText()],
+      eventName: 'platformGuaranty'
     });
   };
   exitPlatform_guaranty(ctx) {
