@@ -29,42 +29,21 @@ class JSONGeneratorExtentionClass extends policyListener {
     super();
     this.errorMsg = null;
     this.policy_segments = [];
-    this.duration = {
-      start_date: null,
-      end_date: null,
-      start_hour: null,
-      end_hour: null
-    };
   }
 
   enterP(ctx) {};
   exitP(ctx) {};
-  enterDuration_clause(ctx) {
-    this.duration.start_date = ctx.DATE()[0].getText();
-    this.duration.end_date = ctx.DATE()[1].getText();
-  };
-  exitDuration_clause(ctx) {
-    //合约到期即i一个终止事件
-    let end_hour = this.duration.end_hour?this.duration.end_hour:'00:00';
-    this.contract_expire = {
-      type: 'contractExpire',
-      params: [this.duration.end_date+end_hour],
-      eventName: 'contractExpire_'+this.duration.end_date + end_hour
-    }
-  };
-  enterStart_hour(ctx) {
-    this.duration.start_hour = ctx.getText();
-  };
+  enterStart_hour(ctx) {};
   exitStart_hour(ctx) {};
 
-  enterEnd_hour(ctx) {
-    this.duration.end_hour = ctx.getText();
-  };
+  enterEnd_hour(ctx) {};
   exitEnd_hour(ctx) {};
 
   enterSegment(ctx) {
     //对应一个segment
     ctx.segment_block = {
+      initialState : 'initial',
+      teminateState : 'terminate',
       users: [], //暂时只有两种user，个人的和组的
       states: [],
       all_occured_states: [],
@@ -72,57 +51,64 @@ class JSONGeneratorExtentionClass extends policyListener {
     };
   };
   exitSegment(ctx) {
-    //针对当前segment所有已经出现的states（all_occured_states）加入终止事件
-    _.each(ctx.segment_block.all_occured_states, (state) => {
-      ctx.segment_block.state_transition_table.push({currentState: state, event: this.contract_expire, nextState: 'contractExpireState'});
-    });
-      this.policy_segments.push(ctx.segment_block);
+      // this.policy_segments.push(ctx.segment_block);
   };
-
-  enterSettlement_clause (ctx) {};
-  exitSettlement_clause (ctx) {
-    //settlement事件
-    let settlementForward = {
-      type: 'settlementForward',
-      params: [3, 'day'],
-      eventName: 'settlementForward_3_day'
-    };
-    let accountSettled = {
-      type: 'accountSettled',
-      params: [],
-      eventName: 'accountSettled'
-    };
-    //列出所有token states
-    let tokenStates = _.reduce( ctx.ID(), (x, y)=> {
-      return x.concat(y.getText())
-    }, []);
-    //获取对应的segment
-    let segment = this.policy_segments[this.policy_segments.length-1];
-    //检查tokens staets 是否已经出现,并且暂存一起来，如果pass验证，那么就concat进去了
-    let tempStates = [];
-    let statesOccured = _.every(tokenStates, (el)=> {
-      tempStates.push({
-        currentState: el,
-        event: settlementForward,
-        nextState: 'settlement'
-      });
-      tempStates.push({
-        currentState: 'settlement',
-        event: accountSettled,
-        nextState: el
-      });
-      return _.contains(segment.all_occured_states, el);
-    });
-    // //针对当前segment加入结算事件
-    if ( statesOccured ) {
-      Array.prototype.push.apply(this.policy_segments[this.policy_segments.length-1].state_transition_table, tempStates);
-    }
-  };
+  // 留给下简化版
+  // enterSettlement_clause (ctx) {};
+  // exitSettlement_clause (ctx) {
+  //   //settlement事件
+  //   let settlementForward = {
+  //     type: 'settlementForward',
+  //     params: [3, 'day'],
+  //     eventName: 'settlementForward_3_day'
+  //   };
+  //   let accountSettled = {
+  //     type: 'accountSettled',
+  //     params: [],
+  //     eventName: 'accountSettled'
+  //   };
+  //   //列出所有token states
+  //   let tokenStates = _.reduce( ctx.ID(), (x, y)=> {
+  //     return x.concat(y.getText())
+  //   }, []);
+  //   //获取对应的segment
+  //   let segment = this.policy_segments[this.policy_segments.length-1];
+  //   //检查tokens staets 是否已经出现,并且暂存一起来，如果pass验证，那么就concat进去了
+  //   let tempStates = [];
+  //   let statesOccured = _.every(tokenStates, (el)=> {
+  //     tempStates.push({
+  //       currentState: el,
+  //       event: settlementForward,
+  //       nextState: 'settlement'
+  //     });
+  //     tempStates.push({
+  //       currentState: 'settlement',
+  //       event: accountSettled,
+  //       nextState: el
+  //     });
+  //     return _.contains(segment.all_occured_states, el);
+  //   });
+  //   // //针对当前segment加入结算事件
+  //   if ( statesOccured ) {
+  //     Array.prototype.push.apply(this.policy_segments[this.policy_segments.length-1].state_transition_table, tempStates);
+  //   }
+  // };
   enterAudience_clause(ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
   };
   exitAudience_clause(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
+  };
+  enterAthorize_token_clause (ctx) {
+    ctx.segment_block = ctx.parentCtx.segment_block;
+    ctx.segment_block.activatedStates = [];
+    _.each( ctx.ID(), (state)=>{
+        ctx.segment_block.activatedStates.push(state.getText());
+    })
+  };
+
+  exitAthorize_token_clause (ctx) {
+    this.policy_segments.push(ctx.segment_block);
   };
 
   enterAudience_individuals_clause(ctx) {
@@ -217,15 +203,36 @@ class JSONGeneratorExtentionClass extends policyListener {
   exitAnd_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
-
-  enterSettlement_time_event(ctx) {
+  enterPeriod_event (ctx) {
     ctx.events = ctx.parentCtx.events;
-    ctx.events.push({type: 'settlement_event', params: ctx.INT().getText()});
+    ctx.events.push({
+      type: 'period',
+      params: [ctx.time_unit().getText()]
+    });
   };
-  exitSettlement_time_event(ctx) {
+  exitPeriod_event (ctx) {
     ctx.parentCtx.events = ctx.events;
   };
-
+  enterSpecific_date_event (ctx) {
+    ctx.events = ctx.parentCtx.events;
+    ctx.events.push({
+      type: 'arrivalDate',
+      params: ['1', ctx.DATE().getText()]
+    });
+  };
+  exitSpecific_date_event  (ctx) {
+    ctx.parentCtx.events = ctx.events;
+  };
+  enterRelative_date_event (ctx) {
+    ctx.events = ctx.parentCtx.events;
+    ctx.events.push({
+      type: 'arrivalDate',
+      params: ['0', ctx.INT().getText(), ctx.time_unit().getText()]
+    });
+  };
+  exitRelative_date_event (ctx) {
+    ctx.parentCtx.events = ctx.events;
+  };
   enterPrice_event(ctx) {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({

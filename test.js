@@ -1,10 +1,11 @@
 var compiler = require('./index.js');
 var string1=
-'This contract shall commence with effect from 12-12-2012 03:30 and shall continue until 12-12-2012 unless terminated earlier in accordance with its terms and conditions'+
-'For userA, userB: in begining:proceed to activatetwo on accepting license licenseA licenseB and contract_guaranty of 5000 refund after 1 day and license licenseBN '+
-   'in activatetwo: proceed to activate on accepting price priceExpression '+
-'The account settlement shall be performed on every 2 day in token state activate activatetwo'
-
+'For userA, userB in the following states: '+
+   'in initial:proceed to activatetwo on accepting license licenseA, licenseB and on contract_guaranty of 5000 refund after 1 day '+
+   'in activatetwo: proceed to activate on date 2012-12-12  ' +
+   'in activate: proceed to activatetwo on the end of cycle ' +
+   'in activatetwo: proceed to activate on 10 day after contract creation '+
+'I agree to authorize token in begining, activate'
 
 var string2 =
 'This contract shall commence with effect from 12-12-2012 03:30 and shall continue until 12-12-2012 03:30 unless terminated earlier in accordance with its terms and conditions'+
@@ -35,7 +36,7 @@ var  string5 =
    'in pending_payment : proceed to activate on transaction of 300 to owner'
 
 var string6 =
-'This contract shall commencith effect from 12/12-2012 03:03 and shall continue until 12-13-2012 unless terminated earlier in accordance with its terms and conditions'+
+'This contract shall commencith effect from 12-12-2012 03:03 and shall continue until 12-13-2012 unless terminated earlier in accordance with its terms and conditions'+
 'For free_log_A and users in user_groups_A:'+
    'in initial:proceed to activate on accepting price priceExpression and  license license_A '+
    'in activate: proceed to settlement on the end of year '+
@@ -45,8 +46,8 @@ var string6 =
 
 console.log('start gen');
 var re = compiler.compile(string1);
-// console.log(re);
+console.log(re);
 // console.log(re.stringArray.join(' ').replace(/\n\s/g,'\n'));
 // console.log(re.policy_segments[0].state_transition_table);
-console.log(JSON.stringify(re.policy_segments[0].state_transition_table));
+// console.log(JSON.stringify(re.policy_segments[0].state_transition_table));
 console.log('end gen');
