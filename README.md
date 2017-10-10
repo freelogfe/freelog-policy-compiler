@@ -6,7 +6,8 @@ ___
  ```
  {
    type: 'period',
-   params: ['day']
+   params: ['day'],
+   eventName: 'period_day_event'
  }
  ```
 ___
@@ -17,18 +18,20 @@ ___
   ```
   {
     type: 'arrivalDate',
-    params: ['1', '2012-12-12']
+    params: ['1', '2012-12-12'],
+    eventName: 'arrivalDate_1_2012-12-12_event'
   }
   ```
   ___
 
   ### relativeDate
   ##### Pattern: _INT TIME_UNIT after contract creation_
-  ##### Sample:  proceed to settlement on **10 cycle after contract creation**
+  ##### Sample:  proceed to settlement on **10 day after contract creation**
    ```
    {
      type: 'arrivalDate',
-     params: ['0', '10', 'cycle']
+     params: ['0', '10', 'day'],
+     eventName: 'arrivalDate_0_10_day_event'
    }
    ```
    ___
@@ -40,7 +43,7 @@ ___
   {
     type: 'pricingAgreement',
     params: [],
-    eventName: 'pricingAgreement'
+    eventName: 'pricingAgreement_event'
   }
    ```
    ___
@@ -52,7 +55,7 @@ ___
   {
     type: 'transaction',
     params: ['userId', 300],
-    eventName: 'transaction_userid_300'
+    eventName: 'transaction_userid_300_event'
   }
    ```
 
@@ -65,7 +68,7 @@ ___
   {
     type: 'signing',
     params: ['l123123', 'l19992'],
-    eventName: 'signing_l123123_l19992'
+    eventName: 'signing_l123123_l19992_event'
   }
    ```
 
@@ -76,9 +79,9 @@ ___
    ##### Sample:  proceed to settlement on **contract_guaranty of 3000 refund after 50 day**
    ```
   {
-    type: 'guaranty',
-    params: 'contractGuaranty_3000_50_day',
-    eventName: 'contractGuaranty'
+    type: 'contractGuaranty',
+    params: [3000, 50, 'day'],
+    eventName: 'contractGuaranty_3000_50_day_event'
   }
    ```
 
@@ -89,8 +92,28 @@ ___
    ##### Sample:  proceed to settlement on **platform_guaranty of 50000**
    ```
   {
-    type: 'guaranty',
-    params: 'contractGuaranty_50000',
-    eventName: 'platformGuaranty'
+    type: 'platformGuaranty',
+    params: [5000],
+    eventName: 'platformGuaranty_5000_event'
+  }
+   ```
+
+   ### compoundEvent
+   ##### Pattern: compoundEvents
+   ##### Sample:  proceed to settlement on **platform_guaranty of 50000 and contract_guaranty of 3000 refund after 50 day**
+   ```
+  {
+    type: 'compound',
+    params: [  {
+        type: 'contractGuaranty',
+        params: [3000, 50, 'day'],
+        eventName: 'contractGuaranty_3000_50_day_event'
+      },
+      {
+        type: 'platformGuaranty',
+        params: [5000],
+        eventName: 'platformGuaranty_5000_event'
+      }],
+    eventName: 'compound_event'
   }
    ```

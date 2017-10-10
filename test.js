@@ -3,7 +3,7 @@ var string1=
 'For userA, userB in the following states: '+
    'in initial:proceed to activatetwo on accepting license licenseA, licenseB and on contract_guaranty of 5000 refund after 1 day '+
    'in activatetwo: proceed to activate on date 2012-12-12  ' +
-   'in activate: proceed to activatetwo on the end of cycle ' +
+   'in activate: proceed to activatetwo on the end of day ' +
    'in activatetwo: proceed to activate on 10 day after contract creation '+
 'I agree to authorize token in begining, activate'
 

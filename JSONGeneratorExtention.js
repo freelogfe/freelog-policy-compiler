@@ -161,29 +161,47 @@ class JSONGeneratorExtentionClass extends policyListener {
 
   // Exit a parse tree produced by policyParser#target_clause.
   exitTarget_clause(ctx) {
-    //生成中间状态
-    let tempCurrent = ctx.current_state;
-    //permute当前events
-    _.each(permute(ctx.events), (orderedEvts) => {
-      tempCurrent = ctx.current_state;
-      let path = [];
-      while (orderedEvts.length != 0) {
-        let event = orderedEvts.pop();
-        path.push(event.type);
-        let randomStateName = genRandomStateName(ctx.current_state, ctx.next_state,path.join('-'));
-        let state_transition = {
-          currentState: tempCurrent,
-          event: event,
-          nextState: ctx.next_state
-        };
-        if (orderedEvts.length != 0) {
-          state_transition.nextState = randomStateName;
-          tempCurrent = randomStateName;
-          ctx.segment_block.all_occured_states.push(randomStateName); //记录同一个起始state下面所有的target state及中间state
-        }
-        ctx.segment_block.state_transition_table.push(state_transition);
-      }
-    });
+    let state_transition
+    if( ctx.events.length >1 ) {
+      state_transition = {
+        currentState: ctx.current_state,
+        event: {
+          type : 'compoundEvents',
+          params : ctx.events
+        },
+        nextState: ctx.next_state
+      };
+    } else {
+      state_transition = {
+        currentState: ctx.current_state,
+        event: ctx.events,
+        nextState: ctx.next_state
+      };
+    }
+    ctx.segment_block.state_transition_table.push(state_transition);
+    // //生成中间状态
+    // let tempCurrent = ctx.current_state;
+    // //permute当前events
+    // _.each(permute(ctx.events), (orderedEvts) => {
+    //   tempCurrent = ctx.current_state;
+    //   let path = [];
+    //   while (orderedEvts.length != 0) {
+    //     let event = orderedEvts.pop();
+    //     path.push(event.type);
+    //     let randomStateName = genRandomStateName(ctx.current_state, ctx.next_state,path.join('-'));
+    //     let state_transition = {
+    //       currentState: tempCurrent,
+    //       event: event,
+    //       nextState: ctx.next_state
+    //     };
+    //     if (orderedEvts.length != 0) {
+    //       state_transition.nextState = randomStateName;
+    //       tempCurrent = randomStateName;
+    //       ctx.segment_block.all_occured_states.push(randomStateName); //记录同一个起始state下面所有的target state及中间state
+    //     }
+    //     ctx.segment_block.state_transition_table.push(state_transition);
+    //   }
+    // });
     //记录同一个curren_state 下的多个target
     ctx.segment_block.all_occured_states.push(ctx.next_state);
     ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
@@ -205,30 +223,37 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.parentCtx.events = ctx.events;
   };
   enterPeriod_event (ctx) {
+    let timeUnit = ctx.time_unit().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'period',
-      params: [ctx.time_unit().getText()]
+      params: [timeUnit],
+      eventName: 'period_'+timeUnit+ '_event'
     });
   };
   exitPeriod_event (ctx) {
     ctx.parentCtx.events = ctx.events;
   };
   enterSpecific_date_event (ctx) {
+    let date = ctx.DATE().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'arrivalDate',
-      params: ['1', ctx.DATE().getText()]
+      params: [1, date],
+      eventName: 'arrivalDate_1_'+date+'_event'
     });
   };
   exitSpecific_date_event  (ctx) {
     ctx.parentCtx.events = ctx.events;
   };
   enterRelative_date_event (ctx) {
+    let day = Number(ctx.INT().getText());
+    let unit = ctx.time_unit().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'arrivalDate',
-      params: ['0', ctx.INT().getText(), ctx.time_unit().getText()]
+      params: [0, day, unit],
+      eventName: 'arrivalDate_0_'+day +'_'+unit+'_event'
     });
   };
   exitRelative_date_event (ctx) {
@@ -238,7 +263,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'pricingAgreement',
-      params:'tbd',
+      params:[tbd],
       eventName: 'pricingAgreement'
     });
   };
@@ -247,11 +272,12 @@ class JSONGeneratorExtentionClass extends policyListener {
   };
 
   enterTransaction_event(ctx) {
+    let transactionAmount = Number(ctx.INT().getText());
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'transaction',
-      params: ['userId', ctx.INT().getText()],
-      eventName: 'transaction_userid_'+ctx.INT().getText()
+      params: ['userId', transactionAmount],
+      eventName: 'transaction_userid_'+transactionAmount
     });
   };
   exitTransaction_event(ctx) {
@@ -282,11 +308,13 @@ class JSONGeneratorExtentionClass extends policyListener {
   };
 
   enterContract_guaranty(ctx) {
+    let amount = ctx.INT()[0].getText();
+    let day = ctx.INT()[1].getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'contractGuaranty',
-      params: 'contractGuaranty_'+ ctx.INT()[0].getText() + '_' + ctx.INT()[1].getText()+ '_day',
-      eventName: 'contractGuaranty'
+      params: [ amount, day, 'day'],
+      eventName: 'contractGuaranty_'+amount +'_'+day+'_event'
     });
   };
   exitContract_guaranty(ctx) {
@@ -297,7 +325,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'platformGuaranty',
-      params: [ctx.INT().getText()],
+      params: [Number(ctx.INT().getText())],
       eventName: 'platformGuaranty'
     });
   };
@@ -327,7 +355,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'accessCountIncrement',
-      params: [ctx.INT().getText()]
+      params: [Number(ctx.INT().getText())]
     });
   };
 
@@ -340,7 +368,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'accessCount',
-      params: [ctx.INT().getText()]
+      params: [Number(ctx.INT().getText())]
     });
   };
   exitVisit_event(ctx) {
