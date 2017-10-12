@@ -45,9 +45,9 @@ var string6 =
    'in suspend : proceed to activate on account_balance smaller than 100000';
 
 console.log('start gen');
-var re = compiler.compile(string1);
-console.log(re);
-// console.log(re.stringArray.join(' ').replace(/\n\s/g,'\n'));
+var re = compiler.compile(string1, 'beautify');
+// console.log(re);
+console.log(re.stringArray.join(' ').replace(/\n\s/g,'\n'));
 // console.log(re.policy_segments[0].state_transition_table);
 console.log(JSON.stringify(re.policy_segments[0].state_transition_table));
 console.log('end gen');
