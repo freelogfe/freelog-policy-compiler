@@ -17,12 +17,6 @@ class Beautify extends policyListener {
   deleteIndent() {
     this._nextIndent = this._nextIndent.slice(0, Number('-' + indentLevel));
   };
-  enterDuration_clause(ctx) {
-    _.map(ctx.children, (child) => {
-      this.stringArray.push(child.getText());
-    });
-  };
-  exitDuration_clause(ctx) {};
   enterSegment(ctx) {
     this.stringArray.push('\n')
     this.stringArray.push('For');
@@ -71,11 +65,25 @@ class Beautify extends policyListener {
   enterAnd_event(ctx) {
     this.stringArray.push('and');
   };
-  enterTime_event(ctx) {
-    this.stringArray.push(ctx.getText());
+  enterPeriod_event (ctx) {
+    _.map(ctx.children, (child) => {
+      this.stringArray.push(child.getText());
+    });
   };
-  enterPrice_event(ctx) {
-    this.stringArray.push('price_event');
+  enterSpecific_date_event (ctx) {
+    _.map(ctx.children, (child) => {
+      this.stringArray.push(child.getText());
+    });
+  };
+  enterRelative_date_event (ctx) {
+    _.map(ctx.children, (child) => {
+      this.stringArray.push(child.getText());
+    });
+  };
+  enterPricing_agreement_event(ctx) {
+    _.map(ctx.children, (child) => {
+      this.stringArray.push(child.getText());
+    });
   };
   enterTransaction_event(ctx) {
     _.map(ctx.children, (child) => {
@@ -98,7 +106,9 @@ class Beautify extends policyListener {
     });
   };
   enterSettlement_event(ctx) {
-    this.stringArray.push('account_settled');
+    _.map(ctx.children, (child) => {
+      this.stringArray.push(child.getText());
+    });
   };
   enterVisit_increment_event(ctx) {
     _.map(ctx.children, (child) => {

@@ -4,7 +4,7 @@ var string1=
    'in initial:proceed to activatetwo on accepting license licenseA, licenseB and on contract_guaranty of 5000 refund after 1 day '+
    'in activatetwo: proceed to activate on date 2012-12-12  ' +
    'in activate: proceed to activatetwo on the end of day ' +
-   'in activatetwo: proceed to activate on 10 day after contract creation '+
+   'in activatetwo: proceed to activate on 10 day after contract creation proceed to activate on contract_guaranty of 12 refund after 13 day '+
 'I agree to authorize token in begining, activate'
 
 var string2 =
