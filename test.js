@@ -44,10 +44,24 @@ var string6 =
    'in settlement: proceed to activate on account_settled '+
    'in suspend : proceed to activate on account_balance smaller than 100000';
 
-console.log('start gen');
-var re = compiler.compile(string1, 'beautify');
-// console.log(re);
-console.log(re.stringArray.join(' ').replace(/\n\s/g,'\n'));
-// console.log(re.policy_segments[0].state_transition_table);
-console.log(JSON.stringify(re.policy_segments[0].state_transition_table));
-console.log('end gen');
+
+var str7 = `For userA , userB in the following states:
+    in initial :
+      proceed to activatetwo on accepting license licenseA , licenseB and on contract_guaranty of 5000 refund after 1 day
+    in activatetwo :
+      proceed to activate on date 2012-12-12
+    in activate :
+      proceed to activatetwo on the end of day
+    in activatetwo :
+      proceed to activate on 10 day after contract creation
+    I agree to authorize token in begining , activate`;
+   console.log('start gen');
+  //  var re = compiler.compile(string1, 'beautify');
+   // console.log(re);
+  //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
+  //  console.log(str);
+   var re2 = compiler.compile(str7);
+  //  console.log(re2);
+  //  console.log(re2.policy_segments[0].users);
+   console.log(re2.policy_segments[0].state_transition_table);
+   // console.log(JSON.stringify(re.policy_segments[0].state_transition_table));

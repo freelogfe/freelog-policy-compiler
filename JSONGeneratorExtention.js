@@ -174,7 +174,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     } else {
       state_transition = {
         currentState: ctx.current_state,
-        event: ctx.events,
+        event: ctx.events[0],
         nextState: ctx.next_state
       };
     }

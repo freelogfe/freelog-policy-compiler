@@ -25,19 +25,14 @@ class Beautify extends policyListener {
     this.deleteIndent();
   };
 
-  enterSettlement_clause (ctx) {
-      this.stringArray.push('\n')
+  enterAudience_clause(ctx) {
     _.map(ctx.children, (child) => {
-      this.stringArray.push(child.getText());
+      // this.stringArray.push(child.getText());
+      // console.log(child.getText());
     });
   };
-  exitSettlement_clause (ctx) {
-  };
-  enterAudience_clause(ctx) {
-    ctx.segment_block = ctx.parentCtx.segment_block;
-  };
   exitAudience_clause(ctx) {
-    this.stringArray.push(':');
+    this.stringArray.push('in the following states:');
     this.addIndent();
     this.stringArray.push(this._nextIndent);
   };
@@ -63,7 +58,7 @@ class Beautify extends policyListener {
     this.stringArray.push('accepting');
   };
   enterAnd_event(ctx) {
-    this.stringArray.push('and');
+    this.stringArray.push('and on');
   };
   enterPeriod_event (ctx) {
     _.map(ctx.children, (child) => {
@@ -141,6 +136,13 @@ class Beautify extends policyListener {
       this.stringArray.push(ctx.getChild(i).getText());
     }
   };
+  enterAthorize_token_clause (ctx) {
+    this.stringArray.push('\n');
+    this.stringArray.push(this._nextIndent);
+    _.map(ctx.children, (child) => {
+      this.stringArray.push(child.getText());
+    });
+  }
 };
 
 module.exports = Beautify
