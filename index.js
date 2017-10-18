@@ -9,9 +9,9 @@ const ErrorListenerExtend = require('./ErrorListenerExtend');
 ErrorListenerExtend(ErrorListener.prototype);
 
 var compile = function (text, target='json'){
-  let extentionClass = require('./JSONGeneratorExtention.js');
+  let extentionClass = require('./JSONGeneratorExtension.js');
   if (target === 'beautify') {
-    extentionClass = require('./BeautifyExtention.js');
+    extentionClass = require('./BeautifyExtension.js');
   }
 
   let chars = new antlr4.InputStream(text);

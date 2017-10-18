@@ -61,7 +61,7 @@ var str7 = `For userA , userB in the following states:
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
    var re2 = compiler.compile(str7);
-  //  console.log(re2);
+   console.log(re2);
   //  console.log(re2.policy_segments[0].users);
-   console.log(re2.policy_segments[0].state_transition_table);
-   // console.log(JSON.stringify(re.policy_segments[0].state_transition_table));
+  //  console.log(re2.policy_segments[0].state_transition_table);
+  //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));
