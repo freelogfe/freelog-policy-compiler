@@ -1,4 +1,4 @@
-var compiler = require('./index.js');
+var compiler = require('./index.js'); 
 var string1=
 'For userA, userB in the following states: '+
    'in initial:proceed to activatetwo on accepting license licenseA, licenseB and on contract_guaranty of 5000 refund after 1 day '+
