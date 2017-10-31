@@ -132,6 +132,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
 
+
   enterState_clause(ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
   };
@@ -141,6 +142,7 @@ class JSONGeneratorExtentionClass extends policyListener {
 
   enterCurrent_state_clause(ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
+    console.log('ctx',ctx.ID());
     ctx.segment_block.states.push(ctx.ID().getText());
     ctx.segment_block.all_occured_states.push(ctx.ID().getText());
     ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
@@ -413,12 +415,13 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.userObj = ctx.parentCtx.userObj;
     //新增users
     ctx.userObj.users = ctx.userObj.users || [];
-    for (var i = 0; i < ctx.getChildCount(); i++) {
-      if (ctx.getChild(i).getText() != ',') {
-        //修改
-        ctx.userObj.users.push(ctx.getChild(i).getText());
-      }
-    }
+    ctx.userObj.users.push(ctx.getText());
+    // for (var i = 0; i < ctx.getChildCount(); i++) {
+    //   if (ctx.getChild(i).getText() != ',') {
+    //     //修改
+    //     ctx.userObj.users.push(ctx.getChild(i).getText());
+    //   }
+    // }
   };
   exitUsers(ctx) {
     //回传

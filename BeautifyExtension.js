@@ -31,6 +31,10 @@ class Beautify extends policyListener {
       // console.log(child.getText());
     });
   };
+  enterAnd (ctx) {
+    this.stringArray.push('and');
+  };
+
   exitAudience_clause(ctx) {
     this.stringArray.push('in the following states:');
     this.addIndent();
@@ -126,9 +130,10 @@ class Beautify extends policyListener {
     });
   };
   enterUsers(ctx) {
-    for (var i = 0; i < ctx.getChildCount(); i++) {
-      this.stringArray.push(ctx.getChild(i).getText());
-    }
+    this.stringArray.push(ctx.getText());
+    // for (var i = 0; i < ctx.getChildCount(); i++) {
+    //   this.stringArray.push(ctx.getChild(i).getText());
+    // }
   };
   enterUser_groups(ctx) {
     this.stringArray.push('users in');

@@ -1,4 +1,4 @@
-var compiler = require('./index.js'); 
+var compiler = require('./index.js');
 var string1=
 'For userA, userB in the following states: '+
    'in initial:proceed to activatetwo on accepting license licenseA, licenseB and on contract_guaranty of 5000 refund after 1 day '+
@@ -45,7 +45,7 @@ var string6 =
    'in suspend : proceed to activate on account_balance smaller than 100000';
 
 
-var str7 = `For userA , userB in the following states:
+var str7 = `For testUser@test.com and users in LoginUser in the following states:
     in initial :
       proceed to activatetwo on accepting license licenseA , licenseB and on contract_guaranty of 5000 refund after 1 day
     in activatetwo :
@@ -61,7 +61,8 @@ var str7 = `For userA , userB in the following states:
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
    var re2 = compiler.compile(str7);
-   console.log(re2);
-  //  console.log(re2.policy_segments[0].users);
+  //  console.log(re2);
+   console.log(re2.policy_segments[0].users);
   //  console.log(re2.policy_segments[0].state_transition_table);
   //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));
+    // console.log(compiler.compile(str7, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
