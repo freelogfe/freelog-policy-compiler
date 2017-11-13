@@ -55,12 +55,17 @@ var str7 = `For testUser@test.com and users in LoginUser in the following states
     in activatetwo :
       proceed to activate on 10 day after contract creation
     I agree to authorize token in begining , activate`;
+
+    var str8 = 'For testUser@test.com and users in LoginUser in the following states:\
+    in initial :\
+      proceed to activatetwo on accepting license licenseA , licenseB\
+    I agree to authorize token in activatetwo'
    console.log('start gen');
   //  var re = compiler.compile(string1, 'beautify');
    // console.log(re);
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
-   var re2 = compiler.compile(str7);
+   var re2 = compiler.compile(str8);
   //  console.log(re2);
    console.log(re2.policy_segments[0].users);
   //  console.log(re2.policy_segments[0].state_transition_table);

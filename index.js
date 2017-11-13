@@ -26,6 +26,7 @@ var compile = function (text, target='json'){
   if( parser._listeners[0].errorMsg ) {
     //把错误信息放进listener里面
     listener.errorMsg =  parser._listeners[0].errorMsg;
+    parser._listeners[0].errorMsg = null
   }
   return listener;
 };
