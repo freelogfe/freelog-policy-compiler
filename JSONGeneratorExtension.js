@@ -44,7 +44,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     //对应一个segment
     ctx.segment_block = {
       initialState : 'initial',
-      teminateState : 'terminate',
+      terminateState : 'terminate',
       users: [], //暂时只有两种user，个人的和组的
       states: [],
       all_occured_states: [],

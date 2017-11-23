@@ -59,6 +59,7 @@ var str7 = `For testUser@test.com and users in LoginUser in the following states
     var str8 = 'For testUser@test.com and users in LoginUser in the following states:\
     in initial :\
       proceed to activatetwo on accepting license licenseA , licenseB\
+        proceed to activatetwo on accepting license licenseA , licenseB\
     I agree to authorize token in '
    console.log('start gen');
   //  var re = compiler.compile(string1, 'beautify');
@@ -66,9 +67,9 @@ var str7 = `For testUser@test.com and users in LoginUser in the following states
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
    var re2 = compiler.compile(str8,'beautify');
-   console.log(re2);
+   console.log(compiler.compile(str8));
    // console.log(re2.policy_segments[0].users);
   //  console.log(re2.policy_segments[0].state_transition_table);
   //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));
 
-    // console.log(compiler.compile(str8, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
+    console.log(compiler.compile(str8, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
