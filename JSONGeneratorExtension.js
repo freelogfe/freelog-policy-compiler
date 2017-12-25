@@ -275,11 +275,12 @@ class JSONGeneratorExtentionClass extends policyListener {
 
   enterTransaction_event(ctx) {
     let transactionAmount = Number(ctx.INT().getText());
+    let account_id = ctx.FEATHERACCOUNT().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'transaction',
-      params: ['userId', transactionAmount],
-      eventName: 'transaction_userid_'+transactionAmount
+      params: [account_id, transactionAmount],
+      eventName: 'transaction_'+account_id+'_'+transactionAmount+'_event'
     });
   };
   exitTransaction_event(ctx) {

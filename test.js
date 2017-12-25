@@ -56,19 +56,18 @@ var str7 = `For testUser@test.com and users in LoginUser in the following states
       proceed to activate on 10 day after contract creation
     I agree to authorize token in begining , activate`;
 
-    var str8 = 'For testUser@test.com and users in LoginUser in the following states:\
-    in initial :\
-      proceed to activatetwo on accepting license licenseA , licenseB\
-        proceed to activatetwo on accepting license licenseA , licenseB\
-    I agree to authorize token in activatetwo  For testUser@test.com and users in LoginUser in the following states:\
-    in initial :\
-      proceed to activatetwo on accepting license licenseA , licenseB\
-        proceed to activatetwo on accepting license licenseA , licenseB\
-    I agree to authorize token in activatetwo                     For testUser@test.com and users in LoginUser in the following states:\
-    in initial :\
-      proceed to activatetwo on accepting license licenseA , licenseB\
-        proceed to activatetwo on accepting license licenseA , licenseB\
-    I agree to authorize token in activatetwo'
+    var str8 = `For testUser@test.com and users in LoginUser in the following states:
+    in initial :
+      proceed to activatetwo on accepting transaction of 100 to feth1026f01634a
+    I agree to authorize token in activatetwo  For testUser@test.com and users in LoginUser in the following states:
+    in initial :
+      proceed to activatetwo on accepting license licenseA , licenseB
+        proceed to activatetwo on accepting license licenseA , licenseB
+    I agree to authorize token in activatetwo                     For testUser@test.com and users in LoginUser in the following states:
+    in initial :
+      proceed to activatetwo on accepting license licenseA , licenseB
+        proceed to activatetwo on accepting license licenseA , licenseB
+    I agree to authorize token in activatetwo`
    console.log('start gen');
   //  var re = compiler.compile(string1, 'beautify');
    // console.log(re);
@@ -77,7 +76,7 @@ var str7 = `For testUser@test.com and users in LoginUser in the following states
    // var re2 = compiler.compile(str8,'beautify');
    // console.log(re2);
    compiler.compile(str8)
-console.log(   compiler.compile(str8));
+console.log(compiler.compile(str8).policy_segments[0].state_transition_table);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
    // console.log(aa);
