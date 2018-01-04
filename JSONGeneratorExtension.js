@@ -46,7 +46,7 @@ class JSONGeneratorExtentionClass extends policyListener {
       segmentText : ctx.start.source[0]._input.strdata.slice(ctx.start.start, ctx.stop.stop+1 ),
       initialState : 'initial',
       terminateState : 'terminate',
-      users: [], //暂时只有两种user，个人的和组的
+      users: null, //暂时只有两种user，个人的和组的
       states: [],
       all_occured_states: [],
       state_transition_table: []
@@ -99,11 +99,13 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.segment_block = ctx.parentCtx.segment_block;
   };
   exitAudience_clause(ctx) {
+
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
   enterAthorize_token_clause (ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
     ctx.segment_block.activatedStates = [];
+    //ID就是token name
     _.each( ctx.ID(), (state)=>{
         ctx.segment_block.activatedStates.push(state.getText());
     });
@@ -114,12 +116,13 @@ class JSONGeneratorExtentionClass extends policyListener {
   };
 
   enterAudience_individuals_clause(ctx) {
+    while ( ctx.parentCtx.constructor.name != 'Audience_clauseContext') {
+      ctx.parentCtx =  ctx.parentCtx.parentCtx
+    }
     ctx.segment_block = ctx.parentCtx.segment_block;
-    ctx.userObj = {};
-    ctx.userObj.userType = 'individuals';
+    ctx.segment_block.users = ctx.segment_block.users || [{'userType': 'individual', 'users': []}];
   };
   exitAudience_individuals_clause(ctx) {
-    ctx.segment_block.users.push(ctx.userObj);
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
 
@@ -412,22 +415,18 @@ class JSONGeneratorExtentionClass extends policyListener {
   exitLicense_resource_id(ctx) {};
 
   enterUsers(ctx) {
-    //继承
-    ctx.userObj = ctx.parentCtx.userObj;
-    //新增users
-    ctx.userObj.users = ctx.userObj.users || [];
-    ctx.userObj.users.push(ctx.getText());
-    // for (var i = 0; i < ctx.getChildCount(); i++) {
-    //   if (ctx.getChild(i).getText() != ',') {
-    //     //修改
-    //     ctx.userObj.users.push(ctx.getChild(i).getText());
-    //   }
-    // }
+    //直接挂载到Audience_clauseContext 上面，所以不需要回传了
+    while ( ctx.parentCtx.constructor.name != 'Audience_clauseContext') {
+      ctx.parentCtx =  ctx.parentCtx.parentCtx
+    }
+    ctx.segment_block = ctx.parentCtx.segment_block;
+    ctx.segment_block.users.forEach(function(obj) {
+      if( obj.userType == 'individual') {
+        obj.users.push(ctx.getText());
+      }
+    })
   };
-  exitUsers(ctx) {
-    //回传
-    ctx.parentCtx.userObj = ctx.userObj;
-  };
+
 
   enterUser_groups(ctx) {
     //继承

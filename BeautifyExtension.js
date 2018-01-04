@@ -27,7 +27,7 @@ class Beautify extends policyListener {
 
   enterAudience_clause(ctx) {
     _.map(ctx.children, (child) => {
-      // this.stringArray.push(child.getText());
+      this.stringArray.push(child.getText());
       // console.log(child.getText());
     });
   };
@@ -130,16 +130,16 @@ class Beautify extends policyListener {
     });
   };
   enterUsers(ctx) {
-    this.stringArray.push(ctx.getText());
+    // this.stringArray.push(ctx.getText());
     // for (var i = 0; i < ctx.getChildCount(); i++) {
-    //   this.stringArray.push(ctx.getChild(i).getText());
+    //   // this.stringArray.push(ctx.getChild(i).getText());
     // }
   };
   enterUser_groups(ctx) {
-    this.stringArray.push('users in');
-    for (var i = 0; i < ctx.getChildCount(); i++) {
-      this.stringArray.push(ctx.getChild(i).getText());
-    }
+    // this.stringArray.push('users in');
+    // for (var i = 0; i < ctx.getChildCount(); i++) {
+    //   this.stringArray.push(ctx.getChild(i).getText());
+    // }
   };
   enterAthorize_token_clause (ctx) {
     this.stringArray.push('\n');
