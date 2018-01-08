@@ -2,8 +2,9 @@
   "name": "freelog_policy_compiler",
   "version": "0.0.18",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
     "policy_lang": "0.0.19",
     "underscore": "^1.8.3"
   },
@@ -11,6 +12,7 @@
     "babel-cli": "^6.26.0"
   },
   "scripts": {
+    "babel": "babel src -d lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

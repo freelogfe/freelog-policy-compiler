@@ -414,7 +414,7 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterLicense_resource_id(ctx) {};
   exitLicense_resource_id(ctx) {};
 
-  enterUsers(ctx) {
+  enterUser_individual(ctx) {
     //直接挂载到Audience_clauseContext 上面，所以不需要回传了
     while ( ctx.parentCtx.constructor.name != 'Audience_clauseContext') {
       ctx.parentCtx =  ctx.parentCtx.parentCtx

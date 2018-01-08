@@ -1,6 +1,6 @@
 var compiler = require('./index.js');
 var string1=
-`For 0x1234, 0x432423 and users in LoginUser, RegisteredUser in the following states:
+`For 0x1234, 0x432@423.com, 0x432@423.com and users in LoginUser, RegisteredUser in the following states:
   in initial :  proceed to signing on accepting transaction of 100 to feth1026f01634a
   in signing:
     proceed to activate on accepting license license_A
