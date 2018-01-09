@@ -1,6 +1,6 @@
 var compiler = require('./lib/index.js');
 var string1=
-`For 0x1234, 0x432@423.com, 0x432@423.com and users in LoginUser, RegisteredUser:
+`For 0x1234, 0x432com, 0x432m and users in LoginUser, RegisteredUser:
   in initial :  proceed to signing on accepting transaction of 100 to feth1026f01634a
   in signing:
     proceed to activate on accepting license license_A
@@ -32,7 +32,7 @@ console.log(compiler.compile(string1).policy_segments[0].users);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
    // console.log(aa);
-   // console.log(compiler.compile(string1, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
+   console.log(compiler.compile(string1, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
    // console.log(re2.policy_segments[0].users);
   //  console.log(re2.policy_segments[0].state_transition_table);
   //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));
