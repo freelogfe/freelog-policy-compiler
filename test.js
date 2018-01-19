@@ -1,10 +1,9 @@
-var compiler = require('./lib/index.js');
+var compiler = require('./src/index.js');
 var string1=
-`For 0x1234, 0x432com, 0x432m and users in LoginUser, RegisteredUser:
+`For 1348012a5810 and users in  NODES:
   in initial :  proceed to signing on accepting transaction of 100 to feth1026f01634a
   in signing:
-    proceed to activate on accepting license license_A
-  I agree to authorize token in activate`;
+    proceed to ^activate^ on accepting license license_A`;
 
 
     var str8 = `For testUser@test.com and users in LoginUser in the following states:

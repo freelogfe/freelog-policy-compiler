@@ -53,7 +53,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     };
   };
   exitSegment(ctx) {
-      // this.policy_segments.push(ctx.segment_block);
+      this.policy_segments.push(ctx.segment_block);
   };
   // 留给下简化版
   // enterSettlement_clause (ctx) {};
@@ -103,16 +103,16 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
   enterAthorize_token_clause (ctx) {
-    ctx.segment_block = ctx.parentCtx.segment_block;
-    ctx.segment_block.activatedStates = [];
-    //ID就是token name
-    _.each( ctx.ID(), (state)=>{
-        ctx.segment_block.activatedStates.push(state.getText());
-    });
+    // ctx.segment_block = ctx.parentCtx.segment_block;
+    // ctx.segment_block.activatedStates = ctx.segment_block.activatedStates ||  [];
+    // //ID就是token name
+    // _.each( ctx.ID(), (state)=>{
+    //     ctx.segment_block.activatedStates.push(state.getText());
+    // });
   };
 
   exitAthorize_token_clause (ctx) {
-    this.policy_segments.push(ctx.segment_block);
+    // this.policy_segments.push(ctx.segment_block);
   };
 
   enterAudience_individuals_clause(ctx) {
@@ -132,6 +132,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.userObj.userType = 'groups';
   };
   exitAudience_groups_clause(ctx) {
+    ctx.segment_block.users = ctx.segment_block.users || [];
     ctx.segment_block.users.push(ctx.userObj);
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
@@ -160,6 +161,12 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.current_state = ctx.parentCtx.current_state_clause().ID().getText();
     //next_state
     ctx.next_state = ctx.ID().getText();
+    //activatedState
+    if(ctx.next_state[0] == '^' && ctx.next_state[ctx.next_state.length-1] == '^') {
+      ctx.next_state = ctx.next_state.slice(1,-1)
+      ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
+      ctx.segment_block.activatedStates.push(ctx.next_state)
+    }
     //重置event
     ctx.events = [];
   };

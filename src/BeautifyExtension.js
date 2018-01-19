@@ -1,6 +1,7 @@
 const policyListener = require('policy_lang').policyListener;
 let _ = require('underscore');
-let indentLevel = 2
+let indentLevel = 2;
+let andflag =false; //小技巧加上and
 
 class Beautify extends policyListener {
   constructor() {
@@ -25,10 +26,17 @@ class Beautify extends policyListener {
     this.deleteIndent();
   };
 
-  enterAudience_clause(ctx) {
+  enterAudience_clause(ctx) {};
+  enterAudience_individuals_clause(ctx) {
+    andflag = true;
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
-      // console.log(child.getText());
+    });
+  };
+  enterAudience_groups_clause(ctx) {
+    if(andflag) this.stringArray.push('and')
+    _.map(ctx.children, (child) => {
+      this.stringArray.push(child.getText());
     });
   };
   enterAnd (ctx) {
