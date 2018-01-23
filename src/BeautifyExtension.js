@@ -1,8 +1,7 @@
 const policyListener = require('policy_lang').policyListener;
 let _ = require('underscore');
 let indentLevel = 2;
-let andflag =false; //小技巧加上and
-
+let usersEnd = false;
 class Beautify extends policyListener {
   constructor() {
     super();
@@ -20,35 +19,24 @@ class Beautify extends policyListener {
   };
   enterSegment(ctx) {
     this.stringArray.push('\n')
-    this.stringArray.push('For');
+    this.stringArray.push('for');
   };
   exitSegment(ctx) {
     this.deleteIndent();
   };
 
-  enterAudience_clause(ctx) {};
-  enterAudience_individuals_clause(ctx) {
-    andflag = true;
-    _.map(ctx.children, (child) => {
-      this.stringArray.push(child.getText());
-    });
-  };
-  enterAudience_groups_clause(ctx) {
-    if(andflag) this.stringArray.push('and')
-    _.map(ctx.children, (child) => {
-      this.stringArray.push(child.getText());
-    });
-  };
-  enterAnd (ctx) {
-    this.stringArray.push('and');
-  };
+  enterUsers(ctx) {
+    console.log('ctx',ctx.getText());
+    this.stringArray.push(ctx.getText());
+    this.stringArray.push(',');
+  }
 
-  exitAudience_clause(ctx) {
-    this.stringArray.push(':');
-    this.addIndent();
-    this.stringArray.push(this._nextIndent);
-  };
   enterState_clause(ctx) {
+    if( !usersEnd ) {
+      usersEnd = true;
+      this.stringArray.pop();
+      this.stringArray.push(':')
+    }
     this.stringArray.push('\n');
     this.stringArray.push(this._nextIndent);
   };
@@ -61,7 +49,11 @@ class Beautify extends policyListener {
     this.stringArray.push('\n');
     this.addIndent();
     this.stringArray.push(this._nextIndent);
-    this.stringArray = this.stringArray.concat(['proceed to', ctx.ID().getText(), 'on']);
+    if (ctx.getText().toLowerCase() == 'terminate') {
+      this.stringArray = this.stringArray.concat([ctx.getText()]);
+    } else {
+      this.stringArray = this.stringArray.concat(['proceed to', ctx.ID().getText(), 'on']);
+    }
   };
   exitTarget_clause() {
     this.deleteIndent();
@@ -137,18 +129,7 @@ class Beautify extends policyListener {
       this.stringArray.push(child.getText());
     });
   };
-  enterUsers(ctx) {
-    // this.stringArray.push(ctx.getText());
-    // for (var i = 0; i < ctx.getChildCount(); i++) {
-    //   // this.stringArray.push(ctx.getChild(i).getText());
-    // }
-  };
-  enterUser_groups(ctx) {
-    // this.stringArray.push('users in');
-    // for (var i = 0; i < ctx.getChildCount(); i++) {
-    //   this.stringArray.push(ctx.getChild(i).getText());
-    // }
-  };
+
   enterAthorize_token_clause (ctx) {
     this.stringArray.push('\n');
     this.stringArray.push(this._nextIndent);

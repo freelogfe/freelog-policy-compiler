@@ -1,10 +1,15 @@
 var compiler = require('./src/index.js');
 var string1=
-`For 1348012a5810 and users in  NODES:
-  in initial :  proceed to signing on accepting transaction of 100 to feth1026f01634a
-  in signing:
-    proceed to ^activate^ on accepting license license_A`;
-
+`for group_user_aASaa,13480125810 :
+  in initial :
+    proceed to <signing> on accepting transaction of 100 to feth1026f01634a
+  in <signing>:
+    proceed to activate on accepting license license_A`;
+var str2 = `
+  for 13480125810,13480125811@123.com,nodes, group_user_abc :
+    in <initial>:
+      TERMINATE
+`
 
     var str8 = `For testUser@test.com and users in LoginUser in the following states:
     in initial :
@@ -23,15 +28,18 @@ var string1=
    // console.log(re);
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
-   // var re2 = compiler.compile(str8,'beautify');
+   // var re2 = compiler.compile(string1,'beautify');
    // console.log(re2);
-console.log(compiler.compile(string1));
+// console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
-console.log(compiler.compile(string1).policy_segments[0].users);
+console.log('users: ',compiler.compile(string1).policy_segments[0].users);
+// console.log('activatedState', compiler.compile(str2).policy_segments[0].activatedStates);
+// console.log('all_occured_states', compiler.compile(str2).policy_segments[0].all_occured_states);
+// console.log('state_transition_table', compiler.compile(string1).policy_segments[0].state_transition_table[0]);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
    // console.log(aa);
-   console.log(compiler.compile(string1, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
+   // console.log(compiler.compile(str2, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
    // console.log(re2.policy_segments[0].users);
   //  console.log(re2.policy_segments[0].state_transition_table);
   //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));

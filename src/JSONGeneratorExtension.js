@@ -1,7 +1,9 @@
 const policy = require('policy_lang');
 const policyListener = policy.policyListener;
 let _ = require('underscore');
-
+let initialFlag = false;
+let individualFlag = false;
+let groupFlag = false;
 //排列
 permute.permArr = [];
 permute.usedChars = [];
@@ -44,9 +46,9 @@ class JSONGeneratorExtentionClass extends policyListener {
     //对应一个segment
     ctx.segment_block = {
       segmentText : ctx.start.source[0]._input.strdata.slice(ctx.start.start, ctx.stop.stop+1 ),
-      initialState : 'initial',
+      initialState : '',
       terminateState : 'terminate',
-      users: null, //暂时只有两种user，个人的和组的
+      users: [],
       states: [],
       all_occured_states: [],
       state_transition_table: []
@@ -95,48 +97,42 @@ class JSONGeneratorExtentionClass extends policyListener {
   //     Array.prototype.push.apply(this.policy_segments[this.policy_segments.length-1].state_transition_table, tempStates);
   //   }
   // };
-  enterAudience_clause(ctx) {
-    ctx.segment_block = ctx.parentCtx.segment_block;
-  };
-  exitAudience_clause(ctx) {
-
-    ctx.parentCtx.segment_block = ctx.segment_block;
-  };
-  enterAthorize_token_clause (ctx) {
-    // ctx.segment_block = ctx.parentCtx.segment_block;
-    // ctx.segment_block.activatedStates = ctx.segment_block.activatedStates ||  [];
-    // //ID就是token name
-    // _.each( ctx.ID(), (state)=>{
-    //     ctx.segment_block.activatedStates.push(state.getText());
-    // });
-  };
-
-  exitAthorize_token_clause (ctx) {
-    // this.policy_segments.push(ctx.segment_block);
-  };
-
-  enterAudience_individuals_clause(ctx) {
-    while ( ctx.parentCtx.constructor.name != 'Audience_clauseContext') {
+  enterUsers(ctx) {
+    while ( ctx.parentCtx.constructor.name != 'SegmentContext') {
       ctx.parentCtx =  ctx.parentCtx.parentCtx
     }
     ctx.segment_block = ctx.parentCtx.segment_block;
-    ctx.segment_block.users = ctx.segment_block.users || [{'userType': 'individual', 'users': []}];
+    //是否手机或者邮箱地址
+    let user = ctx.getText();
+    let isEmail =   /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(user)
+    let isPhone = /^1[3|4|5|8][0-9]\d{4,8}$/.test(user)
+    if ( isEmail || isPhone ) {
+      if( !individualFlag ) {
+        individualFlag = true;
+        ctx.segment_block.users.push({'userType': 'individual', users:[user]})
+      }else {
+        ctx.segment_block.users.forEach((obj)=> {
+          if (obj.userType == 'individual') {
+            obj.users.push(user)
+          }
+        })
+      }
+    }else {
+      if ( !groupFlag ) {
+        groupFlag = true;
+        ctx.segment_block.users.push({'userType': 'group', users:[user]})
+      }else {
+        ctx.segment_block.users.forEach((obj)=> {
+          if (obj.userType == 'group') {
+            obj.users.push(user)
+          }
+        })
+      }
+    }
   };
-  exitAudience_individuals_clause(ctx) {
+  exitUsers(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
-
-  enterAudience_groups_clause(ctx) {
-    ctx.segment_block = ctx.parentCtx.segment_block;
-    ctx.userObj = {};
-    ctx.userObj.userType = 'groups';
-  };
-  exitAudience_groups_clause(ctx) {
-    ctx.segment_block.users = ctx.segment_block.users || [];
-    ctx.segment_block.users.push(ctx.userObj);
-    ctx.parentCtx.segment_block = ctx.segment_block;
-  };
-
 
   enterState_clause(ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
@@ -147,25 +143,42 @@ class JSONGeneratorExtentionClass extends policyListener {
 
   enterCurrent_state_clause(ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
+    if ( !initialFlag ) {
+      initialFlag = true;
+      ctx.segment_block.initialState = ctx.ID().getText()
+    }
+
     ctx.segment_block.states.push(ctx.ID().getText());
     ctx.segment_block.all_occured_states.push(ctx.ID().getText());
     ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
   };
   exitCurrent_state_clause(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
+
+
   };
 
   enterTarget_clause(ctx) {
+
     ctx.segment_block = ctx.parentCtx.segment_block;
+
     //重置state
     ctx.current_state = ctx.parentCtx.current_state_clause().ID().getText();
-    //next_state
-    ctx.next_state = ctx.ID().getText();
-    //activatedState
-    if(ctx.next_state[0] == '^' && ctx.next_state[ctx.next_state.length-1] == '^') {
-      ctx.next_state = ctx.next_state.slice(1,-1)
+    if(ctx.current_state[0] == '<' && ctx.current_state[ctx.current_state.length-1] == '>') {
       ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
-      ctx.segment_block.activatedStates.push(ctx.next_state)
+      ctx.segment_block.activatedStates.push(ctx.current_state)
+      ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
+    }
+
+    if( ctx.getText().toLowerCase() !== 'terminate') {
+      //next_state
+      ctx.next_state = ctx.ID().getText();
+      //activatedState
+      if(ctx.next_state[0] == '<' && ctx.next_state[ctx.next_state.length-1] == '>') {
+        ctx.next_state = ctx.next_state.slice(1,-1)
+        ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
+        ctx.segment_block.activatedStates.push(ctx.next_state)
+      }
     }
     //重置event
     ctx.events = [];
@@ -215,8 +228,10 @@ class JSONGeneratorExtentionClass extends policyListener {
     //   }
     // });
     //记录同一个curren_state 下的多个target
-    ctx.segment_block.all_occured_states.push(ctx.next_state);
-    ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
+    if ( ctx.next_state ) {
+      ctx.segment_block.all_occured_states.push(ctx.next_state);
+      ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
+    }
     //回传
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
@@ -284,8 +299,10 @@ class JSONGeneratorExtentionClass extends policyListener {
   };
 
   enterTransaction_event(ctx) {
-    let transactionAmount = Number(ctx.INT().getText());
+    let transactionAmount = Number(ctx.INTEGER_NUMBER().getText());
     let account_id = ctx.FEATHERACCOUNT().getText();
+
+
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'transaction',
@@ -422,18 +439,26 @@ class JSONGeneratorExtentionClass extends policyListener {
   exitLicense_resource_id(ctx) {};
 
   enterUser_individual(ctx) {
-    //直接挂载到Audience_clauseContext 上面，所以不需要回传了
-    while ( ctx.parentCtx.constructor.name != 'Audience_clauseContext') {
-      ctx.parentCtx =  ctx.parentCtx.parentCtx
-    }
-    ctx.segment_block = ctx.parentCtx.segment_block;
-    ctx.segment_block.users.forEach(function(obj) {
-      if( obj.userType == 'individual') {
-        obj.users.push(ctx.getText());
-      }
-    })
-  };
+    // //直接挂载到Audience_clauseContext 上面，所以不需要回传了
+    // while ( ctx.parentCtx.constructor.name != 'SegmentContext') {
+    //   ctx.parentCtx =  ctx.parentCtx.parentCtx
+    // }
+    // ctx.segment_block = ctx.parentCtx.segment_block;
+    //
+    // let hasIndividual;
+    // ctx.segment_block.users.forEach((obj)=> {
+    //   if( obj.userType == 'individual') {
+    //     hasIndividual = true;
+    //       obj.users.push(ctx.getText());
+    //   }
+    // })
+    // if ( !hasIndividual ) {
+    //     ctx.segment_block.users.push({userType:'individual', users:[ctx.getText()]})
+    // }
 
+  };
+  exitUser_individual(ctx) {
+  }
 
   enterUser_groups(ctx) {
     //继承
