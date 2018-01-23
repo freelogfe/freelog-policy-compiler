@@ -1,7 +1,6 @@
 const policyListener = require('policy_lang').policyListener;
 let _ = require('underscore');
 let indentLevel = 2;
-let usersEnd = false;
 class Beautify extends policyListener {
   constructor() {
     super();
@@ -31,8 +30,7 @@ class Beautify extends policyListener {
   }
 
   enterState_clause(ctx) {
-    if( !usersEnd ) {
-      usersEnd = true;
+    if( this.stringArray[this.stringArray.length-1] ==',' ) {
       this.stringArray.pop();
       this.stringArray.push(':')
     }

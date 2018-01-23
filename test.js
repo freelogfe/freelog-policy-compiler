@@ -1,10 +1,10 @@
 var compiler = require('./src/index.js');
 var string1=
-`for group_user_aASaa,13480125810 :
+`for group_user_aASaa , 13480125810 :
   in initial :
-    proceed to <signing> on accepting transaction of 100 to feth1026f01634a
-  in <signing>:
-    proceed to activate on accepting license license_A`;
+    proceed to <signing> on transaction of 100 to feth1026f01634a
+  in <signing> :
+    proceed to activate on license license_A`;
 var str2 = `
   for 13480125810,13480125811@123.com,nodes, group_user_abc :
     in <initial>:
@@ -44,4 +44,4 @@ console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
   //  console.log(re2.policy_segments[0].state_transition_table);
   //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));
 
-    // console.log(compiler.compile(str8, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
+    console.log(compiler.compile(string1, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
