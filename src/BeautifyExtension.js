@@ -26,7 +26,6 @@ class Beautify extends policyListener {
   };
 
   enterUsers(ctx) {
-    console.log('ctx',ctx.getText());
     this.stringArray.push(ctx.getText());
     this.stringArray.push(',');
   }

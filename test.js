@@ -28,13 +28,13 @@ var str2 = `
    // console.log(re);
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
-   // var re2 = compiler.compile(string1,'beautify');
+   var re2 = compiler.compile(string1);
    // console.log(re2);
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
-console.log('users: ',compiler.compile(string1).policy_segments[0].users);
+console.log('users: ',re2.policy_segments[0].users);
 // console.log('activatedState', compiler.compile(str2).policy_segments[0].activatedStates);
-// console.log('all_occured_states', compiler.compile(str2).policy_segments[0].all_occured_states);
+console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
 // console.log('state_transition_table', compiler.compile(string1).policy_segments[0].state_transition_table[0]);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
