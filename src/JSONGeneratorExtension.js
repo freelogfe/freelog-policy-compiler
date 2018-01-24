@@ -56,6 +56,9 @@ class JSONGeneratorExtentionClass extends policyListener {
   };
   exitSegment(ctx) {
       this.policy_segments.push(ctx.segment_block);
+      initialFlag = false;
+      individualFlag = false;
+      groupFlag = false;
   };
   // 留给下简化版
   // enterSettlement_clause (ctx) {};
@@ -154,8 +157,6 @@ class JSONGeneratorExtentionClass extends policyListener {
   };
   exitCurrent_state_clause(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
-
-
   };
 
   enterTarget_clause(ctx) {
