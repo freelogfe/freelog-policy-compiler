@@ -1,8 +1,8 @@
-var compiler = require('./src/index.js');
+var compiler = require('./lib/index.js');
 var string1=
 `for group_user_aASaa , 13480125810 :
   in initial :
-    proceed to <signing> on transaction of 100 to feth1026f01634a
+    proceed to <signing> on transaction of 100 to feth233dbc32069
   in <signing> :
     proceed to activate on license license_A`;
 var str2 = `
@@ -29,13 +29,13 @@ var str2 = `
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
    var re2 = compiler.compile(string1);
-   // console.log(re2);
+   console.log(re2);
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
-console.log('users: ',re2.policy_segments[0].users);
+// console.log('users: ',re2.policy_segments[0].users);
 // console.log('activatedState', compiler.compile(str2).policy_segments[0].activatedStates);
-console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
-// console.log('state_transition_table', compiler.compile(string1).policy_segments[0].state_transition_table[0]);
+// console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
+// console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
    // console.log(aa);
