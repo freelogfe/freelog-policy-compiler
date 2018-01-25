@@ -108,7 +108,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     //是否手机或者邮箱地址
     let user = ctx.getText().toLowerCase();
     let isGroupNode =   /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user);
-    let isNode = /nodes/.test(users.toLowerCase());
+    let isNode = /nodes/.test(user.toLowerCase());
     let isGroupUser = /^group_user_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isDomain = /^[a-zA-Z0-9-]{4,24}$/.test(user);
     if (!( isDomain || isGroupUser || isGroupNode)) {
