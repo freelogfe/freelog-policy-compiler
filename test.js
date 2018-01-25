@@ -1,6 +1,6 @@
 var compiler = require('./lib/index.js');
 var string1=
-`for group_user_aASaa , 13480125810 :
+`for group_user_aASaa , domain-name :
   in initial :
     proceed to <signing> on transaction of 100 to feth233dbc32069
   in <signing> :

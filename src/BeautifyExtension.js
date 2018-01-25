@@ -30,7 +30,7 @@ class Beautify extends policyListener {
   }
 
   enterState_clause(ctx) {
-    if( this.stringArray[this.stringArray.length-1] ==',' ) {
+    if( this.stringArray[this.stringArray.length-1] == ',' ) {
       this.stringArray.pop();
       this.stringArray.push(':')
     }
