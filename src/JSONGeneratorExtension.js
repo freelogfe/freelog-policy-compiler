@@ -107,13 +107,14 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.segment_block = ctx.parentCtx.segment_block;
     //是否手机或者邮箱地址
     let user = ctx.getText().toLowerCase();
-    let isGroupNode =   /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user)
-    let isGroupUser = /^group_user_[a-zA-Z0-9-]{4,20}$/.test(user)
+    let isGroupNode =   /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user);
+    let isNode = /nodes/.test(users.toLowerCase());
+    let isGroupUser = /^group_user_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isDomain = /^[a-zA-Z0-9-]{4,24}$/.test(user);
     if (!( isDomain || isGroupUser || isGroupNode)) {
       return this.errorMsg =   'user format is not valid'
     }
-    if ( isGroupNode || isGroupUser ) {
+    if ( isGroupNode || isGroupUser || isNode ) {
       if( !groupFlag ) {
         groupFlag = true;
         ctx.segment_block.users.push({'userType': 'group', users:[user]})
