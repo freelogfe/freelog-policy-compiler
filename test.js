@@ -1,10 +1,15 @@
 var compiler = require('./lib/index.js');
 var string1=
-`for nodes , domain-name :
+`for group_user_aASaa :
   in initial :
     proceed to <signing> on transaction of 100 to feth233dbc32069
   in <signing> :
-    proceed to activate on license license_A`;
+    proceed to activate on license license_A
+for group_user_bbbb :
+ in initial :
+   proceed to <signing> on transaction of 1999 to feth233dbc32069
+ in <signing> :
+   proceed to activate on license license_A`;
 var str2 = `
   for 13480125810,13480125811@123.com,nodes, group_user_abc :
     in <initial>:

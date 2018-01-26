@@ -109,12 +109,13 @@ class JSONGeneratorExtentionClass extends policyListener {
     let user = ctx.getText().toLowerCase();
     let isGroupNode =   /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isNode = /nodes/.test(user.toLowerCase());
+    let isPublic = /public/.test(user.toLowerCase());
     let isGroupUser = /^group_user_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isDomain = /^[a-zA-Z0-9-]{4,24}$/.test(user);
     if (!( isDomain || isGroupUser || isGroupNode)) {
       return this.errorMsg =   'user format is not valid'
     }
-    if ( isGroupNode || isGroupUser || isNode ) {
+    if ( isGroupNode || isGroupUser || isNode || isPublic ) {
       if( !groupFlag ) {
         groupFlag = true;
         ctx.segment_block.users.push({'userType': 'group', users:[user]})
