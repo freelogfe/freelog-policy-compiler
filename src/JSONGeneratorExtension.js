@@ -3,6 +3,7 @@ const policyListener = policy.policyListener;
 let _ = require('underscore');
 let initialFlag = false;
 let domainFlag = false;
+let individualFlag = false;
 let groupFlag = false;
 //排列
 permute.permArr = [];
@@ -58,6 +59,7 @@ class JSONGeneratorExtentionClass extends policyListener {
       this.policy_segments.push(ctx.segment_block);
       initialFlag = false;
       domainFlag = false;
+      individualFlag = false;
       groupFlag = false;
   };
   // 留给下简化版
@@ -107,15 +109,17 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.segment_block = ctx.parentCtx.segment_block;
     //是否手机或者邮箱地址
     let user = ctx.getText().toLowerCase();
+
     let isGroupNode =   /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isNode = /nodes/.test(user.toLowerCase());
     let isPublic = /public/.test(user.toLowerCase());
     let isGroupUser = /^group_user_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isDomain = /^[a-zA-Z0-9-]{4,24}$/.test(user);
-    if (!( isDomain || isGroupUser || isGroupNode)) {
+    let isSelf = /self/.test(user.toLowerCase());
+    if (!( isGroupNode || isNode || isPublic || isGroupUser || isDomain || isSelf)) {
       return this.errorMsg =   'user format is not valid'
     }
-    if ( isGroupNode || isGroupUser || isNode || isPublic ) {
+    if ( isGroupNode || isNode || isPublic || isGroupUser ) {
       if( !groupFlag ) {
         groupFlag = true;
         ctx.segment_block.users.push({'userType': 'group', users:[user]})
@@ -126,7 +130,18 @@ class JSONGeneratorExtentionClass extends policyListener {
           }
         })
       }
-    }else {
+    } else if ( isSelf ) {
+      if ( !individualFlag ) {
+        individualFlag = true;
+        ctx.segment_block.users.push({'userType': 'individual', users:[user]})
+      }else {
+        ctx.segment_block.users.forEach((obj)=> {
+          if (obj.userType == 'individual') {
+            obj.users.push(user)
+          }
+        })
+      }
+    }else if (isDomain) {
       if ( !domainFlag ) {
         domainFlag = true;
         ctx.segment_block.users.push({'userType': 'domain', users:[user]})

@@ -1,15 +1,8 @@
 var compiler = require('./lib/index.js');
 var string1=
-`for group_user_aASaa :
+`for 123-123, self :
   in initial :
-    proceed to <signing> on transaction of 100 to feth233dbc32069
-  in <signing> :
-    proceed to activate on license license_A
-for group_user_bbbb :
- in initial :
-   proceed to <signing> on transaction of 1999 to feth233dbc32069
- in <signing> :
-   proceed to activate on license license_A`;
+    terminate`
 var str2 = `
   for 13480125810,13480125811@123.com,nodes, group_user_abc :
     in <initial>:
@@ -37,7 +30,7 @@ var str2 = `
    console.log(re2);
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
-// console.log('users: ',re2.policy_segments[0].users);
+console.log('users: ',re2.policy_segments[0].users);
 // console.log('activatedState', compiler.compile(str2).policy_segments[0].activatedStates);
 // console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
 // console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
