@@ -2,7 +2,7 @@ var compiler = require('./lib/index.js');
 var string1=
 `for 1111 :
   in initial :
-    proceed to net on acepting license aaaaa123`
+    proceed to net on accepting license aaaaa123`
 var str2 = `
   for 13480125810,13480125811@123.com,nodes, group_user_abc :
     in <initial>:
