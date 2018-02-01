@@ -199,7 +199,6 @@ class JSONGeneratorExtentionClass extends policyListener {
       ctx.next_state = ctx.ID().getText();
       //activatedState
       if(ctx.next_state[0] == '<' && ctx.next_state[ctx.next_state.length-1] == '>') {
-        ctx.next_state = ctx.next_state.slice(1,-1)
         ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
         ctx.segment_block.activatedStates.push(ctx.next_state)
       }
@@ -325,9 +324,8 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterTransaction_event(ctx) {
 
     ctx.children.forEach((child)=> {
-      console.log(child.getText());
+
     })
-    // console.log('444444444', ctx.FEATHERACCOUNT().getText());
     let transactionAmount = Number(ctx.INTEGER_NUMBER().getText());
     let account_id = ctx.FEATHERACCOUNT().getText();
 
