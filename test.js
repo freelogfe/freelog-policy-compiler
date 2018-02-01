@@ -1,32 +1,21 @@
 var compiler = require('./lib/index.js');
 var string1=
-`for 1111 :
+`for nodes :
+in <signing> :
+  proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
   in initial :
-    proceed to net on accepting license aaaaa123`
+    proceed to <signing> on transaction of 100 to feth233dbc32069`
 var str2 = `
-  for 13480125810,13480125811@123.com,nodes, group_user_abc :
+  for nodes, group_user_absc :
     in <initial>:
       TERMINATE
 `
-
-    var str8 = `For testUser@test.com and users in LoginUser in the following states:
-    in initial :
-      proceed to activatetwo on accepting transaction of 100 to feth1026f01634a
-    I agree to authorize token in activatetwo  For testUser@test.com and users in LoginUser in the following states:
-    in initial :
-      proceed to activatetwo on accepting license licenseA , licenseB
-        proceed to activatetwo on accepting license licenseA , licenseB
-    I agree to authorize token in activatetwo                     For testUser@test.com and users in LoginUser in the following states:
-    in initial :
-      proceed to activatetwo on accepting license licenseA , licenseB
-        proceed to activatetwo on accepting license licenseA , licenseB
-    I agree to authorize token in activatetwo`
    console.log('start gen');
   //  var re = compiler.compile(string1, 'beautify');
    // console.log(re);
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
-   var re2 = compiler.compile(string1);
+   var re2 = compiler.compile(str2);
    console.log(re2.errorMsg);
    // if ( /^mismatched input/.test(re2.errorMsg) ) {
    //   let end = re2.errorMsg.indexOf('expecting');
