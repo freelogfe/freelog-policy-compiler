@@ -1,8 +1,8 @@
 var compiler = require('./lib/index.js');
 var string1=
-`for 123-123, self :
+`for 1111 :
   in initial :
-    terminate`
+    proceed to net on acepting license aaaaa123`
 var str2 = `
   for 13480125810,13480125811@123.com,nodes, group_user_abc :
     in <initial>:
@@ -27,10 +27,17 @@ var str2 = `
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
    var re2 = compiler.compile(string1);
-   console.log(re2);
+   console.log(re2.errorMsg);
+   // if ( /^mismatched input/.test(re2.errorMsg) ) {
+   //   let end = re2.errorMsg.indexOf('expecting');
+   //   let result = re2.errorMsg.substring(17, end);
+   //   let suggestions = re2.errorMsg.substring(end+10)
+   //
+   //   console.log(result + 'is not matched, expected inputs are ' + suggestions);
+   // }
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
-console.log('users: ',re2.policy_segments[0].users);
+// console.log('users: ',re2.policy_segments[0].users);
 // console.log('activatedState', compiler.compile(str2).policy_segments[0].activatedStates);
 // console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
 // console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
