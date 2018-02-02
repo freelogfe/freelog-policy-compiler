@@ -178,8 +178,6 @@ class JSONGeneratorExtentionClass extends policyListener {
   };
   exitCurrent_state_clause(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
-
-
   };
 
   enterTarget_clause(ctx) {
@@ -285,7 +283,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.parentCtx.events = ctx.events;
   };
   enterSpecific_date_event (ctx) {
-    let date = ctx.DATE().getText();
+    let date = ctx.ID().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'arrivalDate',

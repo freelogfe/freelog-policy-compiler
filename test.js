@@ -5,7 +5,7 @@ for nodes :
 
   in initial :
 
-    proceed to <signing> on transaction of 100 to feth233dbc32069
+    proceed to <signing> on transaction of 100 to feadsfd
 
   in <signing> :
 
@@ -32,9 +32,9 @@ for nodes :
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
 // console.log('users: ',re2.policy_segments[0].users);
-console.log('activatedState', compiler.compile(string1).policy_segments[0].activatedStates);
+// console.log('activatedState', re2.policy_segments[0].activatedStates);
 // console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
-// console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
+console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
    // console.log(aa);
