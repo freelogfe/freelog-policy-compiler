@@ -9,7 +9,15 @@ for nodes :
 
   in <signing> :
 
-    proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce`
+    proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+
+in happy:
+    proceed to happy2 on date 2012-12-12
+in happy2:
+    proceed to happy3 on every cycle
+in happy3:
+    proceed to happy4 on account_balance greater than 200
+    `
 var str2 = `
 for nodes :
   in initial :
@@ -21,7 +29,7 @@ for nodes :
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
    var re2 = compiler.compile(string1);
-   // console.log(re2.errorMsg);
+   console.log(re2);
    // if ( /^mismatched input/.test(re2.errorMsg) ) {
    //   let end = re2.errorMsg.indexOf('expecting');
    //   let result = re2.errorMsg.substring(17, end);
@@ -31,7 +39,7 @@ for nodes :
    // }
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
-// console.log('users: ',re2.policy_segments[0].users);
+console.log('users: ',re2.policy_segments[0].users);
 // console.log('activatedState', re2.policy_segments[0].activatedStates);
 // console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
 console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
