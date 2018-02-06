@@ -199,6 +199,7 @@ class JSONGeneratorExtentionClass extends policyListener {
       if(ctx.next_state[0] == '<' && ctx.next_state[ctx.next_state.length-1] == '>') {
         ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
         ctx.segment_block.activatedStates.push(ctx.next_state)
+        ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
       }
     }
     //重置event

@@ -2,26 +2,19 @@ var compiler = require('./lib/index.js');
 var string1=
 `
 for nodes :
-
   in initial :
-
-    proceed to <signing> on transaction of 100 to feadsfd
-
-  in <signing> :
-
-    proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-
-in happy:
-    proceed to happy2 on date 2012-12-12
-in happy2:
-    proceed to happy3 on every cycle
-in happy3:
-    proceed to happy4 on account_balance greater than 200
+    proceed to <activate> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+  in <activate> :
+    proceed to pendingpayment on end of cycle
+  in pendingpayment :
+      proceed to <activate> on transaction of 100 to feth233dbc32069
     `
 var str2 = `
 for nodes :
   in initial :
-    proceed to <activate> on license e759419923ea25bf6dff2694391a1e65c21739ce
+    proceed to <signing> on transaction of 100 to feth233dbc32069
+  in <signing> :
+    proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
 `
    console.log('start gen');
   //  var re = compiler.compile(string1, 'beautify');
@@ -40,9 +33,9 @@ for nodes :
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
 console.log('users: ',re2.policy_segments[0].users);
-// console.log('activatedState', re2.policy_segments[0].activatedStates);
+console.log('activatedState', re2.policy_segments[0].activatedStates);
 // console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
-console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
+console.log('state_transition_table', re2.policy_segments[0].state_transition_table[1]);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
    // console.log(aa);
