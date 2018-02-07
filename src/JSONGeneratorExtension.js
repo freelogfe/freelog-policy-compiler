@@ -56,6 +56,9 @@ class JSONGeneratorExtentionClass extends policyListener {
     };
   };
   exitSegment(ctx) {
+      if( ctx.segment_block.activatedStates == [] ||  !ctx.segment_block.activatedStates) {
+        this.errorMsg = 'missing activatedStates'
+      }
       this.policy_segments.push(ctx.segment_block);
       initialFlag = false;
       domainFlag = false;
