@@ -1,8 +1,8 @@
 ## SAMPLES
 1. free policy
 ```
-for public:
-  in <initial>:
+for public :
+  in <initial> :
     terminate
 ```
 
@@ -20,8 +20,7 @@ for nodes :
   in initial :
     proceed to pending on transaction of 100 to feth233dbc32069
   in pending :
-    proceed to <active> on license e759419923ea25bf6dff2694391a1e65c21739ce
-
+    proceed to <active> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
 ```
 
 4. period transaction policy
@@ -34,8 +33,6 @@ for public :
   in pendingtwo :
     proceed to <pending> on transaction of 100 to feth233dbc320699
 ```
-
-3.
 
 ## Events
 ___
