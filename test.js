@@ -1,13 +1,13 @@
 var compiler = require('./lib/index.js');
 var str1=
 `
-for REGISTERED_USERS :
+for public :
   in initial :
-    proceed to <activate> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-  in <activate> :
-    proceed to pendingpayment on end of cycle
-  in pendingpayment :
-    proceed to <activate> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+    proceed to <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+  in <pending> :
+    proceed to pendingtwo on end of cycle
+  in pendingtwo :
+    proceed to <pending> on transaction of 100 to feth233dbc320699
     `
 var str2 = `
 for nodes :
@@ -27,8 +27,8 @@ var str3 =
    // console.log(re);
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
-   var re2 = compiler.compile(str3);
-   console.log(re2);
+   var re2 = compiler.compile(str1);
+   // console.log(re2);
    // if ( /^mismatched input/.test(re2.errorMsg) ) {
    //   let end = re2.errorMsg.indexOf('expecting');
    //   let result = re2.errorMsg.substring(17, end);
@@ -38,10 +38,10 @@ var str3 =
    // }
 // console.log(compiler.compile(string1));
 // console.log(compiler.compile(string1, 'beautify'));
-console.log('users: ',re2.policy_segments[0].users);
-console.log('activatedState', re2.policy_segments[0].activatedStates);
+// console.log('users: ',re2.policy_segments[0].users);
+// console.log('activatedState', re2.policy_segments[0].activatedStates);
 // console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
-console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
+// console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
    // console.log(compiler.compile(str8).policy_segments[0].segmentText);
    // let aa  = compiler.compile(str8).policy_segments[0].segmentText
    // console.log(aa);
@@ -50,4 +50,4 @@ console.log('state_transition_table', re2.policy_segments[0].state_transition_ta
   //  console.log(re2.policy_segments[0].state_transition_table);
   //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));
 
-    console.log(compiler.compile(str2, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
+    console.log(compiler.compile(str1, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));

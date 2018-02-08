@@ -1,19 +1,58 @@
+## SAMPLES
+1. free policy
+```
+for public:
+  in <initial>:
+    terminate
+```
+
+2. transaction policy
+
+```
+for nodes :
+  in initial :
+    proceed to <active> on transaction of 100 to feth233dbc32069
+```
+
+3. license & transaction policy
+```
+for nodes :
+  in initial :
+    proceed to pending on transaction of 100 to feth233dbc32069
+  in pending :
+    proceed to <active> on license e759419923ea25bf6dff2694391a1e65c21739ce
+
+```
+
+4. period transaction policy
+```
+for public :
+  in initial :
+    proceed to <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+  in <pending> :
+    proceed to pendingtwo on end of cycle
+  in pendingtwo :
+    proceed to <pending> on transaction of 100 to feth233dbc320699
+```
+
+3.
+
 ## Events
 ___
 ### period
-##### Pattern: _the end of TIME_UNIT_
-##### Sample:  proceed to settlement on **the end of day**
+##### Grammar: _end of TIME_CYCLE_
+##### Sample:  proceed to settlement on **end of day**
  ```
  {
    type: 'period',
-   params: ['day'],
+   params: ['cycle'],
    eventName: 'period_day_event'
  }
  ```
 ___
 
  ### specificDate
- ##### Pattern: _date DATE_
+ ##### Grammar: _date DATE_
  ##### Sample:  proceed to settlement on **date 2012-12-12**
   ```
   {
@@ -25,7 +64,7 @@ ___
   ___
 
   ### relativeDate
-  ##### Pattern: _INT TIME_UNIT after contract creation_
+  ##### Grammar: _INT TIME_UNIT after contract creation_
   ##### Sample:  proceed to settlement on **10 day after contract creation**
    ```
    {
@@ -37,7 +76,7 @@ ___
    ___
 
    ### pricingAgreement
-   ##### Pattern: _pricingAgreement_
+   ##### Grammar: _pricingAgreement_
    ##### Sample:  proceed to settlement on **pricingAgreement**
    ```
   {
@@ -49,8 +88,8 @@ ___
    ___
 
    ### transaction
-   ##### Pattern: _transaction of INT to owner_
-   ##### Sample:  proceed to settlement on ** transaction of 300 to owner**
+   ##### Grammar: _transaction of INT to FEATHERACCOUNT_
+   ##### Sample:  proceed to settlement on ** transaction of 300 to feth233dbc32069**
    ```
   {
     type: 'transaction',
@@ -62,12 +101,12 @@ ___
    ___
 
    ### signing
-   ##### Pattern: _license LICENSEID_
-   ##### Sample:  proceed to settlement on ** license l12312, l19992**
+   ##### Grammar: _license LICENSEID_
+   ##### Sample:  proceed to settlement on ** accepting license e759419923ea25bf6dff2694391a1e65c21739ce, e7594199435jh3jhasf1ff2694391a1e65c21739ce**
    ```
   {
     type: 'signing',
-    params: ['l123123', 'l19992'],
+    params: ['e759419923ea25bf6dff2694391a1e65c21739ce', 'e7594199435jh3jhasf1ff2694391a1e65c21739ce'],
     eventName: 'signing_l123123_l19992_event'
   }
    ```
@@ -75,7 +114,7 @@ ___
    ___
 
    ### contractGuaranty
-   ##### Pattern: _contract_guaranty of INT refund after INT day_
+   ##### Grammar: _contract_guaranty of INT refund after INT day_
    ##### Sample:  proceed to settlement on **contract_guaranty of 3000 refund after 50 day**
    ```
   {
@@ -88,7 +127,7 @@ ___
    ___
 
    ### platformGuaranty
-   ##### Pattern: _platform_guaranty of INT_
+   ##### Grammar: _platform_guaranty of INT_
    ##### Sample:  proceed to settlement on **platform_guaranty of 50000**
    ```
   {
@@ -99,7 +138,7 @@ ___
    ```
 
    ### compoundEvent
-   ##### Pattern: compoundEvents
+   ##### Grammar: compoundEvents
    ##### Sample:  proceed to settlement on **platform_guaranty of 50000 and contract_guaranty of 3000 refund after 50 day**
    ```
   {
