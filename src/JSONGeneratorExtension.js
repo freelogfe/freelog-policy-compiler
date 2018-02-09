@@ -108,7 +108,8 @@ class JSONGeneratorExtentionClass extends policyListener {
   //   }
   // };
   enterUsers(ctx) {
-    while ( ctx.parentCtx && ctx.parentCtx.constructor.name != 'SegmentContext') {
+    console.log(ctx);
+    while ( ctx.parentCtx && ctx.parentCtx.parentCtx) {
       ctx.parentCtx =  ctx.parentCtx.parentCtx
     }
     ctx.segment_block = ctx.parentCtx.segment_block;
