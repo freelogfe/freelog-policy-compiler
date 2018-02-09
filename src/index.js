@@ -9,9 +9,11 @@ const ErrorListenerExtend = require('./ErrorListenerExtend');
 ErrorListenerExtend(ErrorListener.prototype);
 
 var compile = function (text, target='json'){
-  let extentionClass = require('./JSONGeneratorExtension.js');
+  let extentionClass;
   if (target === 'beautify') {
     extentionClass = require('./BeautifyExtension.js');
+  } else {
+    extentionClass = require('./JSONGeneratorExtension.js');
   }
 
   let chars = new antlr4.InputStream(text);
@@ -28,6 +30,11 @@ var compile = function (text, target='json'){
     listener.errorMsg =  parser._listeners[0].errorMsg;
     parser._listeners[0].errorMsg = null
   }
+  chars = null;
+  lexer = null;
+  tokens = null;
+  tree = null;
+  parser = null;
   return listener;
 };
 
