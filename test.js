@@ -1,7 +1,7 @@
 var compiler = require('./lib/index.js');
 var str0 =
 `
-for nodes : in initial
+for nodes : in initial :
 `
 
 var str1=
@@ -32,7 +32,7 @@ var str3 =
    // console.log(re);
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
-   var re2 = compiler.compile(str1);
+   var re2 = compiler.compile(str0);
    console.log(re2);
    // if ( /^mismatched input/.test(re2.errorMsg) ) {
    //   let end = re2.errorMsg.indexOf('expecting');
