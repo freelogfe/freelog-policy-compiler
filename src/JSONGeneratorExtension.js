@@ -1,10 +1,10 @@
-const policy = require('policy_lang');
-const policyListener = policy.policyListener;
+const policyListener = require('policy_lang').policyListener;
 let _ = require('underscore');
 let initialFlag = false;
 let domainFlag = false;
 let individualFlag = false;
 let groupFlag = false;
+
 //排列
 permute.permArr = [];
 permute.usedChars = [];
@@ -27,6 +27,8 @@ function permute(input) {
 function genRandomStateName(evt1, evt2,evtName) {
   return 'autoGenratedState_'+evt1+'_'+evt2+'_'+evtName+'_'+(new Date * Math.random()).toString(36).substring(0, 4);
 };
+
+
 
 class JSONGeneratorExtentionClass extends policyListener {
   constructor() {
@@ -466,8 +468,6 @@ class JSONGeneratorExtentionClass extends policyListener {
 
   enterLicense_resource_id(ctx) {};
   exitLicense_resource_id(ctx) {};
-
-
 
 };
 
