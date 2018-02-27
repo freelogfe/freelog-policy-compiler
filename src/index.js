@@ -15,7 +15,7 @@ var compile = function (text, target = 'json') {
   let Listener;
   if (target === 'beautify') {
     Listener = require('./BeautifyExtension.js');
-  }else {
+  } else {
     Listener = require('./JSONGeneratorExtension.js');
   }
 
@@ -26,9 +26,9 @@ var compile = function (text, target = 'json') {
   parser.buildParseTrees = true;
   const tree = parser.policy();
   let listener = new Listener();
-  // const walker = new ParseTreeWalker();
-  // walker.walk(listener, tree);
-  antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
+  const walker = new ParseTreeWalker();
+  walker.walk(listener, tree);
+  // antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
   if (parser._listeners[0].errorMsg) {
     //把错误信息放进listener里面
     listener.errorMsg = parser._listeners[0].errorMsg;

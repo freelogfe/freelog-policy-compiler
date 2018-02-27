@@ -13,6 +13,7 @@
     "babel-cli": "^6.26.0"
   },
   "scripts": {
+    "publish": "npm publish --access=public",
     "babel": "babel src -d lib"
   },
   "repository": {
