@@ -1,7 +1,7 @@
 var compiler = require('./lib/index.js');
 var str0 =
 `
-for nodes : in initial :
+for pp32)):
 `
 
 var str1=
@@ -20,6 +20,11 @@ for nodes :
     proceed to <signing> on transaction of 100 to feth233dbc32069
   in <signing> :
     proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+    for nodes :
+      in initial :
+        proceed to <signing> on transaction of 100 to feth233dbc32069
+      in <signing> :
+        proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
 `
 var str3 =
 `
@@ -28,12 +33,12 @@ var str3 =
       proceed to pending on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
 `
    console.log('start gen');
-  //  var re = compiler.compile(string1, 'beautify');
-   // console.log(re);
+   var re = compiler.compile(str0, 'beautify');
+   console.log(re);
   //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
   //  console.log(str);
-   var re2 = compiler.compile(str1);
-   console.log(re2);
+   // var re2 = compiler.compile(str0);
+   // console.log(re2);
    // if ( /^mismatched input/.test(re2.errorMsg) ) {
    //   let end = re2.errorMsg.indexOf('expecting');
    //   let result = re2.errorMsg.substring(17, end);

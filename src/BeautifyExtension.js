@@ -46,10 +46,14 @@ class Beautify extends policyListener {
     this.stringArray.push('\n');
     this.addIndent();
     this.stringArray.push(this._nextIndent);
-    if (ctx.getText().toLowerCase() == 'terminate') {
-      this.stringArray = this.stringArray.concat([ctx.getText()]);
-    } else {
-      this.stringArray = this.stringArray.concat(['proceed to', ctx.ID().getText(), 'on']);
+    if (!checkExist('ID', ctx)) {
+
+    }else {
+      if (ctx.getText().toLowerCase() == 'terminate') {
+        this.stringArray = this.stringArray.concat([ctx.getText()]);
+      } else {
+        this.stringArray = this.stringArray.concat(['proceed to', ctx.ID().getText(), 'on']);
+      }
     }
   };
   exitTarget_clause() {
@@ -135,5 +139,12 @@ class Beautify extends policyListener {
     });
   }
 };
+
+function checkExist(name,ctx) {
+  if ( ctx[name]() != null ) {
+    return true
+  }
+  return false
+}
 
 module.exports = Beautify
