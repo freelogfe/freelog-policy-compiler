@@ -1,10 +1,10 @@
 var {
-  resourcePolicyLangListener
+  resourcePolicyListener
 } = require('@freelog/resource-policy-lang');
 let _ = require('underscore');
 let indentLevel = 2;
 
-class Beautify extends resourcePolicyLangListener {
+class Beautify extends resourcePolicyListener {
   constructor() {
     super();
     this.errorMsg = null;

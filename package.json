@@ -1,6 +1,6 @@
 {
   "name": "@freelog/resource-policy-compiler",
-  "version": "0.1.20",
+  "version": "0.0.1",
   "description": "policy compiler",
   "main": "lib/index.js",
   "dependencies": {

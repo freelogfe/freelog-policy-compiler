@@ -1,6 +1,6 @@
 var {
-  resourcePolicyLangLexer,
-  resourcePolicyLangParser
+  resourcePolicyLexer,
+  resourcePolicyParser
 } = require('@freelog/resource-policy-lang');
 const {
   InputStream,
@@ -18,9 +18,9 @@ var compile = function (text, target = 'json') {
   }
 
   let chars = new InputStream(text);
-  let lexer = new resourcePolicyLangLexer(chars);
+  let lexer = new resourcePolicyLexer(chars);
   let tokens = new CommonTokenStream(lexer);
-  let parser = new resourcePolicyLangParser(tokens);
+  let parser = new resourcePolicyParser(tokens);
   parser.buildParseTrees = true;
   const tree = parser.policy();
   let listener = new Listener();

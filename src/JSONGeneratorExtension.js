@@ -1,5 +1,5 @@
 var {
-  resourcePolicyLangListener
+  resourcePolicyListener
 } = require('@freelog/resource-policy-lang');
 let _ = require('underscore');
 let initialFlag = false;
@@ -31,7 +31,7 @@ function genRandomStateName(evt1, evt2, evtName) {
   return 'autoGenratedState_' + evt1 + '_' + evt2 + '_' + evtName + '_' + (new Date * Math.random()).toString(36).substring(0, 4);
 };
 
-class JSONGeneratorExtentionClass extends resourcePolicyLangListener {
+class JSONGeneratorExtentionClass extends resourcePolicyListener {
   constructor() {
     super();
     this.errorMsg = null;
