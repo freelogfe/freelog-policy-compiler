@@ -1,11 +1,13 @@
 var {
   resourcePolicyListener
 } = require('@freelog/resource-policy-lang');
+
 let _ = require('underscore');
 let initialFlag = false;
 let domainFlag = false;
 let individualFlag = false;
 let groupFlag = false;
+
 //排列
 permute.permArr = [];
 permute.usedChars = [];
@@ -29,7 +31,7 @@ function permute(input) {
 //随机的中间态名称
 function genRandomStateName(evt1, evt2, evtName) {
   return 'autoGenratedState_' + evt1 + '_' + evt2 + '_' + evtName + '_' + (new Date * Math.random()).toString(36).substring(0, 4);
-};
+}
 
 class JSONGeneratorExtentionClass extends resourcePolicyListener {
   constructor() {
@@ -121,8 +123,11 @@ class JSONGeneratorExtentionClass extends resourcePolicyListener {
   //   }
   // };
   enterUsers(ctx) {
-    while (ctx.parentCtx.constructor.name != 'SegmentContext') {
-      ctx.parentCtx = ctx.parentCtx.parentCtx
+    while ( ctx.parentCtx) {
+      if (ctx.parentCtx.segment_block  && ctx.parentCtx.segment_block.users) {
+        break;
+      }
+      ctx.parentCtx =  ctx.parentCtx.parentCtx
     }
     ctx.segment_block = ctx.parentCtx.segment_block;
     //是否手机或者邮箱地址
@@ -511,11 +516,7 @@ class JSONGeneratorExtentionClass extends resourcePolicyListener {
 
   enterLicense_resource_id(ctx) {
   };
-
-  exitLicense_resource_id(ctx) {
-  };
-
-
-};
+  exitLicense_resource_id(ctx) {};
+}
 
 module.exports = JSONGeneratorExtentionClass;

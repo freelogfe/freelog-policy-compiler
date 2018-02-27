@@ -1,10 +1,11 @@
 {
   "name": "@freelog/resource-policy-compiler",
   "version": "0.0.1",
-  "description": "policy compiler",
+  "description": "resource policy compiler",
   "main": "lib/index.js",
   "dependencies": {
     "@freelog/resource-policy-lang": "latest",
+    "gulp": "^3.9.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
