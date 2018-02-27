@@ -1,4 +1,4 @@
-var compiler = require('./lib/index.js');
+var compiler = require('../lib/index.js');
 var str1=
 `
 for public :

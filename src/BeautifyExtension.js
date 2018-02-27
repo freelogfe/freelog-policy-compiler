@@ -1,25 +1,32 @@
-const policyListener = require('policy_lang').policyListener;
+var {
+  resourcePolicyLangListener
+} = require('@freelog/resource-policy-lang');
 let _ = require('underscore');
 let indentLevel = 2;
-class Beautify extends policyListener {
+
+class Beautify extends resourcePolicyLangListener {
   constructor() {
     super();
     this.errorMsg = null;
     this.stringArray = [];
     this._nextIndent = ' ';
   }
+
   addIndent() {
     _.each(_.range(indentLevel), () => {
       this._nextIndent += " ";
     });
   };
+
   deleteIndent() {
     this._nextIndent = this._nextIndent.slice(0, Number('-' + indentLevel));
   };
+
   enterSegment(ctx) {
     this.stringArray.push('\n')
     this.stringArray.push('for');
   };
+
   exitSegment(ctx) {
     this.deleteIndent();
   };
@@ -30,18 +37,20 @@ class Beautify extends policyListener {
   }
 
   enterState_clause(ctx) {
-    if( this.stringArray[this.stringArray.length-1] == ',' ) {
+    if (this.stringArray[this.stringArray.length - 1] == ',') {
       this.stringArray.pop();
       this.stringArray.push(':')
     }
     this.stringArray.push('\n');
     this.stringArray.push(this._nextIndent);
   };
+
   enterCurrent_state_clause(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterTarget_clause(ctx) {
     this.stringArray.push('\n');
     this.addIndent();
@@ -52,88 +61,104 @@ class Beautify extends policyListener {
       this.stringArray = this.stringArray.concat(['proceed to', ctx.ID().getText(), 'on']);
     }
   };
+
   exitTarget_clause() {
     this.deleteIndent();
   }
+
   enterAccepting(ctx) {
     this.stringArray.push('accepting');
   };
+
   enterAnd_event(ctx) {
     this.stringArray.push('and on');
   };
-  enterPeriod_event (ctx) {
+
+  enterPeriod_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
-  enterSpecific_date_event (ctx) {
+
+  enterSpecific_date_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
-  enterRelative_date_event (ctx) {
+
+  enterRelative_date_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterPricing_agreement_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterTransaction_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterContract_guaranty(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterPlatform_guaranty(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterSigning_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterSettlement_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterVisit_increment_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterVisit_event(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterBalance_greater(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
+
   enterBalance_smaller(ctx) {
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   };
 
-  enterAthorize_token_clause (ctx) {
+  enterAthorize_token_clause(ctx) {
     this.stringArray.push('\n');
     this.stringArray.push(this._nextIndent);
     _.map(ctx.children, (child) => {
       this.stringArray.push(child.getText());
     });
   }
-};
+}
 
 module.exports = Beautify

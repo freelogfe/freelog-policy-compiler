@@ -1,10 +1,10 @@
 {
-  "name": "freelog_policy_compiler",
+  "name": "@freelog/resource-policy-compiler",
   "version": "0.1.20",
-  "description": "",
+  "description": "policy compiler",
   "main": "lib/index.js",
   "dependencies": {
-    "policy_lang": "^0.3.8",
+    "@freelog/resource-policy-lang": "latest",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -12,17 +12,21 @@
     "babel-cli": "^6.26.0"
   },
   "scripts": {
-    "babel": "babel src -d lib",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "babel": "babel src -d lib"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nergalyang/freelog-policy-compiler.git"
+    "url": "git@github.com:freelogfe/freelog-resource-policy-compiler.git"
   },
+  "keywords": [
+    "freelog",
+    "policy",
+    "compiler"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nergalyang/freelog-policy-compiler/issues"
+    "url": "https://github.com/freelogfe/freelog-resource-policy-compiler/issues"
   },
-  "homepage": "https://github.com/nergalyang/freelog-policy-compiler#readme"
+  "homepage": "https://github.com/freelogfe/freelog-resource-policy-compiler"
 }

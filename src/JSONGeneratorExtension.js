@@ -1,5 +1,6 @@
-const policy = require('policy_lang');
-const policyListener = policy.policyListener;
+var {
+  resourcePolicyLangListener
+} = require('@freelog/resource-policy-lang');
 let _ = require('underscore');
 let initialFlag = false;
 let domainFlag = false;
@@ -8,6 +9,7 @@ let groupFlag = false;
 //排列
 permute.permArr = [];
 permute.usedChars = [];
+
 function permute(input) {
   let i,
     ch;
@@ -23,48 +25,61 @@ function permute(input) {
   }
   return permute.permArr
 };
+
 //随机的中间态名称
-function genRandomStateName(evt1, evt2,evtName) {
-  return 'autoGenratedState_'+evt1+'_'+evt2+'_'+evtName+'_'+(new Date * Math.random()).toString(36).substring(0, 4);
+function genRandomStateName(evt1, evt2, evtName) {
+  return 'autoGenratedState_' + evt1 + '_' + evt2 + '_' + evtName + '_' + (new Date * Math.random()).toString(36).substring(0, 4);
 };
 
-class JSONGeneratorExtentionClass extends policyListener {
+class JSONGeneratorExtentionClass extends resourcePolicyLangListener {
   constructor() {
     super();
     this.errorMsg = null;
     this.policy_segments = [];
   }
 
-  enterP(ctx) {};
-  exitP(ctx) {};
-  enterStart_hour(ctx) {};
-  exitStart_hour(ctx) {};
+  enterP(ctx) {
+  };
 
-  enterEnd_hour(ctx) {};
-  exitEnd_hour(ctx) {};
+  exitP(ctx) {
+  };
+
+  enterStart_hour(ctx) {
+  };
+
+  exitStart_hour(ctx) {
+  };
+
+  enterEnd_hour(ctx) {
+  };
+
+  exitEnd_hour(ctx) {
+  };
 
   enterSegment(ctx) {
     //对应一个segment
     ctx.segment_block = {
-      segmentText : ctx.start.source[0]._input.strdata.slice(ctx.start.start, ctx.stop.stop+1 ),
-      initialState : '',
-      terminateState : 'terminate',
+      segmentText: ctx.start.source[0]._input.strdata.slice(ctx.start.start, ctx.stop.stop + 1),
+      initialState: '',
+      terminateState: 'terminate',
       users: [],
       states: [],
       all_occured_states: [],
       state_transition_table: []
     };
   };
+
   exitSegment(ctx) {
-      if( ctx.segment_block.activatedStates == [] ||  !ctx.segment_block.activatedStates) {
-        this.errorMsg = 'missing activatedStates'
-      }
-      this.policy_segments.push(ctx.segment_block);
-      initialFlag = false;
-      domainFlag = false;
-      individualFlag = false;
-      groupFlag = false;
+    if (ctx.segment_block.activatedStates == [] || !ctx.segment_block.activatedStates) {
+      this.errorMsg = 'missing activatedStates'
+    }
+    this.policy_segments.push(ctx.segment_block);
+    initialFlag = false;
+    domainFlag = false;
+    individualFlag = false;
+    groupFlag = false;
   };
+
   // 留给下简化版
   // enterSettlement_clause (ctx) {};
   // exitSettlement_clause (ctx) {
@@ -106,50 +121,50 @@ class JSONGeneratorExtentionClass extends policyListener {
   //   }
   // };
   enterUsers(ctx) {
-    while ( ctx.parentCtx.constructor.name != 'SegmentContext') {
-      ctx.parentCtx =  ctx.parentCtx.parentCtx
+    while (ctx.parentCtx.constructor.name != 'SegmentContext') {
+      ctx.parentCtx = ctx.parentCtx.parentCtx
     }
     ctx.segment_block = ctx.parentCtx.segment_block;
     //是否手机或者邮箱地址
     let user = ctx.getText().toLowerCase();
 
-    let isGroupNode =   /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user);
+    let isGroupNode = /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isNode = /nodes/.test(user.toLowerCase());
     let isPublic = /public/.test(user.toLowerCase());
     let isGroupUser = /^group_user_[a-zA-Z0-9-]{4,20}$/.test(user);
     let isDomain = /^[a-zA-Z0-9-]{4,24}$/.test(user);
     let isSelf = /self/.test(user.toLowerCase());
     if (!( isGroupNode || isNode || isPublic || isGroupUser || isDomain || isSelf)) {
-      return this.errorMsg =   'user format is not valid'
+      return this.errorMsg = 'user format is not valid'
     }
-    if ( isGroupNode || isNode || isPublic || isGroupUser ) {
-      if( !groupFlag ) {
+    if (isGroupNode || isNode || isPublic || isGroupUser) {
+      if (!groupFlag) {
         groupFlag = true;
-        ctx.segment_block.users.push({'userType': 'group', users:[user]})
-      }else {
-        ctx.segment_block.users.forEach((obj)=> {
+        ctx.segment_block.users.push({'userType': 'group', users: [user]})
+      } else {
+        ctx.segment_block.users.forEach((obj) => {
           if (obj.userType == 'group') {
             obj.users.push(user)
           }
         })
       }
-    } else if ( isSelf ) {
-      if ( !individualFlag ) {
+    } else if (isSelf) {
+      if (!individualFlag) {
         individualFlag = true;
-        ctx.segment_block.users.push({'userType': 'individual', users:[user]})
-      }else {
-        ctx.segment_block.users.forEach((obj)=> {
+        ctx.segment_block.users.push({'userType': 'individual', users: [user]})
+      } else {
+        ctx.segment_block.users.forEach((obj) => {
           if (obj.userType == 'individual') {
             obj.users.push(user)
           }
         })
       }
-    }else if (isDomain) {
-      if ( !domainFlag ) {
+    } else if (isDomain) {
+      if (!domainFlag) {
         domainFlag = true;
-        ctx.segment_block.users.push({'userType': 'domain', users:[user]})
-      }else {
-        ctx.segment_block.users.forEach((obj)=> {
+        ctx.segment_block.users.push({'userType': 'domain', users: [user]})
+      } else {
+        ctx.segment_block.users.forEach((obj) => {
           if (obj.userType == 'domain') {
             obj.users.push(user)
           }
@@ -157,6 +172,7 @@ class JSONGeneratorExtentionClass extends policyListener {
       }
     }
   };
+
   exitUsers(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
@@ -164,13 +180,14 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterState_clause(ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
   };
+
   exitState_clause(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
 
   enterCurrent_state_clause(ctx) {
     ctx.segment_block = ctx.parentCtx.segment_block;
-    if ( !initialFlag ) {
+    if (!initialFlag) {
       initialFlag = true;
       ctx.segment_block.initialState = ctx.ID().getText();
     }
@@ -179,6 +196,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.segment_block.all_occured_states.push(ctx.ID().getText());
     ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
   };
+
   exitCurrent_state_clause(ctx) {
     ctx.parentCtx.segment_block = ctx.segment_block;
   };
@@ -189,17 +207,17 @@ class JSONGeneratorExtentionClass extends policyListener {
 
     //重置state
     ctx.current_state = ctx.parentCtx.current_state_clause().ID().getText();
-    if(ctx.current_state[0] == '<' && ctx.current_state[ctx.current_state.length-1] == '>') {
+    if (ctx.current_state[0] == '<' && ctx.current_state[ctx.current_state.length - 1] == '>') {
       ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
       ctx.segment_block.activatedStates.push(ctx.current_state)
       ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
     }
 
-    if( ctx.getText().toLowerCase() !== 'terminate') {
+    if (ctx.getText().toLowerCase() !== 'terminate') {
       //next_state
       ctx.next_state = ctx.ID().getText();
       //activatedState
-      if(ctx.next_state[0] == '<' && ctx.next_state[ctx.next_state.length-1] == '>') {
+      if (ctx.next_state[0] == '<' && ctx.next_state[ctx.next_state.length - 1] == '>') {
         ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
         ctx.segment_block.activatedStates.push(ctx.next_state)
         ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
@@ -212,12 +230,12 @@ class JSONGeneratorExtentionClass extends policyListener {
   // Exit a parse tree produced by policyParser#target_clause.
   exitTarget_clause(ctx) {
     let state_transition
-    if( ctx.events.length >1 ) {
+    if (ctx.events.length > 1) {
       state_transition = {
         currentState: ctx.current_state,
         event: {
-          type : 'compoundEvents',
-          params : ctx.events
+          type: 'compoundEvents',
+          params: ctx.events
         },
         nextState: ctx.next_state
       };
@@ -253,7 +271,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     //   }
     // });
     //记录同一个curren_state 下的多个target
-    if ( ctx.next_state ) {
+    if (ctx.next_state) {
       ctx.segment_block.all_occured_states.push(ctx.next_state);
       ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
     }
@@ -264,6 +282,7 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterEvent(ctx) {
     ctx.events = ctx.parentCtx.events;
   };
+
   exitEvent(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -271,61 +290,70 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterAnd_event(ctx) {
     ctx.events = ctx.parentCtx.events;
   };
+
   exitAnd_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
-  enterPeriod_event (ctx) {
+
+  enterPeriod_event(ctx) {
     let timeUnit = ctx.time_unit().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'period',
       params: [timeUnit],
-      eventName: 'period_'+timeUnit+ '_event'
+      eventName: 'period_' + timeUnit + '_event'
     });
   };
-  exitPeriod_event (ctx) {
+
+  exitPeriod_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
-  enterSpecific_date_event (ctx) {
+
+  enterSpecific_date_event(ctx) {
     let date = ctx.ID().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'arrivalDate',
       params: [1, date],
-      eventName: 'arrivalDate_1_'+date+'_event'
+      eventName: 'arrivalDate_1_' + date + '_event'
     });
   };
-  exitSpecific_date_event  (ctx) {
+
+  exitSpecific_date_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
-  enterRelative_date_event (ctx) {
+
+  enterRelative_date_event(ctx) {
     let day = Number(ctx.INT().getText());
     let unit = ctx.time_unit().getText();
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'arrivalDate',
       params: [0, day, unit],
-      eventName: 'arrivalDate_0_'+day +'_'+unit+'_event'
+      eventName: 'arrivalDate_0_' + day + '_' + unit + '_event'
     });
   };
-  exitRelative_date_event (ctx) {
+
+  exitRelative_date_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
+
   enterPricing_agreement_event(ctx) {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'pricingAgreement',
-      params:[tbd],
+      params: [tbd],
       eventName: 'pricingAgreement'
     });
   };
+
   exitPricing_agreement_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
 
   enterTransaction_event(ctx) {
 
-    ctx.children.forEach((child)=> {
+    ctx.children.forEach((child) => {
 
     })
     let transactionAmount = Number(ctx.INTEGER_NUMBER().getText());
@@ -336,9 +364,10 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events.push({
       type: 'transaction',
       params: [account_id, transactionAmount],
-      eventName: 'transaction_'+account_id+'_'+transactionAmount+'_event'
+      eventName: 'transaction_' + account_id + '_' + transactionAmount + '_event'
     });
   };
+
   exitTransaction_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -346,15 +375,16 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterSigning_event(ctx) {
     ctx.events = ctx.parentCtx.events;
     let tempLicenseIds = [];
-    _.each( ctx.license_resource_id(), (licensId)=>{
+    _.each(ctx.license_resource_id(), (licensId) => {
       tempLicenseIds.push(licensId.getText());
     });
     ctx.events.push({
       type: 'signing',
       params: tempLicenseIds,
-      eventName: 'signing_'+tempLicenseIds.join('_')
+      eventName: 'signing_' + tempLicenseIds.join('_')
     });
   };
+
   exitSigning_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -362,6 +392,7 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterGuaranty_event(ctx) {
     ctx.events = ctx.parentCtx.events;
   };
+
   exitGuaranty_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -372,10 +403,11 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'contractGuaranty',
-      params: [ amount, day, 'day'],
-      eventName: 'contractGuaranty_'+amount +'_'+day+'_event'
+      params: [amount, day, 'day'],
+      eventName: 'contractGuaranty_' + amount + '_' + day + '_event'
     });
   };
+
   exitContract_guaranty(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -388,6 +420,7 @@ class JSONGeneratorExtentionClass extends policyListener {
       eventName: 'platformGuaranty'
     });
   };
+
   exitPlatform_guaranty(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -396,9 +429,10 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({
       type: 'accountSettled',
-      params:[]
+      params: []
     });
   };
+
   exitSettlement_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -406,6 +440,7 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterAccess_count_event(ctx) {
     ctx.events = ctx.parentCtx.events;
   };
+
   exitAccess_count_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -430,6 +465,7 @@ class JSONGeneratorExtentionClass extends policyListener {
       params: [Number(ctx.INT().getText())]
     });
   };
+
   exitVisit_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -437,6 +473,7 @@ class JSONGeneratorExtentionClass extends policyListener {
   enterBalance_event(ctx) {
     ctx.events = ctx.parentCtx.events;
   };
+
   exitBalance_event(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -446,6 +483,7 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({type: 'balance_smaller_event', params: ctx.getText()});
   };
+
   exitBalance_greater(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
@@ -454,19 +492,28 @@ class JSONGeneratorExtentionClass extends policyListener {
     ctx.events = ctx.parentCtx.events;
     ctx.events.push({type: 'balance_greater_event', params: ctx.getText()});
   };
+
   exitBalance_smaller(ctx) {
     ctx.parentCtx.events = ctx.events;
   };
 
-  enterTime_unit(ctx) {};
-  exitTime_unit(ctx) {};
+  enterTime_unit(ctx) {
+  };
 
-  enterState(ctx) {};
-  exitState(ctx) {};
+  exitTime_unit(ctx) {
+  };
 
-  enterLicense_resource_id(ctx) {};
-  exitLicense_resource_id(ctx) {};
+  enterState(ctx) {
+  };
 
+  exitState(ctx) {
+  };
+
+  enterLicense_resource_id(ctx) {
+  };
+
+  exitLicense_resource_id(ctx) {
+  };
 
 
 };
