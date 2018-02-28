@@ -33,7 +33,7 @@ function genRandomStateName(evt1, evt2, evtName) {
   return 'autoGenratedState_' + evt1 + '_' + evt2 + '_' + evtName + '_' + (new Date * Math.random()).toString(36).substring(0, 4);
 }
 
-class JSONGeneratorExtentionClass extends resourcePolicyListener {
+class JSONGeneratoListener extends resourcePolicyListener {
   constructor() {
     super();
     this.errorMsg = null;
@@ -72,7 +72,7 @@ class JSONGeneratorExtentionClass extends resourcePolicyListener {
   };
 
   exitSegment(ctx) {
-    if (ctx.segment_block.activatedStates == [] || !ctx.segment_block.activatedStates) {
+    if (ctx.segment_block.activatedStates === [] || !ctx.segment_block.activatedStates) {
       this.errorMsg = 'missing activatedStates'
     }
     this.policy_segments.push(ctx.segment_block);
@@ -123,11 +123,11 @@ class JSONGeneratorExtentionClass extends resourcePolicyListener {
   //   }
   // };
   enterUsers(ctx) {
-    while ( ctx.parentCtx) {
-      if (ctx.parentCtx.segment_block  && ctx.parentCtx.segment_block.users) {
+    while (ctx.parentCtx) {
+      if (ctx.parentCtx.segment_block && ctx.parentCtx.segment_block.users) {
         break;
       }
-      ctx.parentCtx =  ctx.parentCtx.parentCtx
+      ctx.parentCtx = ctx.parentCtx.parentCtx
     }
     ctx.segment_block = ctx.parentCtx.segment_block;
     //是否手机或者邮箱地址
@@ -212,7 +212,7 @@ class JSONGeneratorExtentionClass extends resourcePolicyListener {
 
     //重置state
     ctx.current_state = ctx.parentCtx.current_state_clause().ID().getText();
-    if (ctx.current_state[0] == '<' && ctx.current_state[ctx.current_state.length - 1] == '>') {
+    if (ctx.current_state[0] === '<' && ctx.current_state[ctx.current_state.length - 1] === '>') {
       ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
       ctx.segment_block.activatedStates.push(ctx.current_state)
       ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
@@ -222,7 +222,7 @@ class JSONGeneratorExtentionClass extends resourcePolicyListener {
       //next_state
       ctx.next_state = ctx.ID().getText();
       //activatedState
-      if (ctx.next_state[0] == '<' && ctx.next_state[ctx.next_state.length - 1] == '>') {
+      if (ctx.next_state[0] === '<' && ctx.next_state[ctx.next_state.length - 1] === '>') {
         ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
         ctx.segment_block.activatedStates.push(ctx.next_state)
         ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
@@ -516,7 +516,9 @@ class JSONGeneratorExtentionClass extends resourcePolicyListener {
 
   enterLicense_resource_id(ctx) {
   };
-  exitLicense_resource_id(ctx) {};
+
+  exitLicense_resource_id(ctx) {
+  };
 }
 
-module.exports = JSONGeneratorExtentionClass;
+module.exports = JSONGeneratoListener;

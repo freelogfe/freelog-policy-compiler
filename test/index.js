@@ -1,24 +1,101 @@
-<<<<<<< HEAD:test/index.js
-var compiler = require('../lib/index.js');
-=======
-var compiler = require('./lib/index.js');
-var str0 =
-`
-for pp32)):
-`
+var assert = require('assert')
+var fs = require('fs')
+var path = require('path')
+var compiler = require('../src/index.js');
+var base = 'test/fixtures'
 
->>>>>>> 90df9ab17d670d78caafae8a9d0bd3a01d0c80c5:test.js
-var str1=
-`
-for public :
-  in initial :
-    proceed to <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-  in <pending> :
-    proceed to pendingtwo on end of cycle
-  in pendingtwo :
-    proceed to <pending> on transaction of 100 to feth233dbc320699
-    `
-var str2 = `
+
+describe('resource-policy-compiler', function () {
+
+  describe('compile policy', function () {
+    it('missing activatedStates', function (done) {
+      var policy = `
+            for public  :
+    `;
+
+      var result = compiler.compile(policy)
+      assert.equal(result.errorMsg, 'missing activatedStates')
+      done()
+    })
+
+    it('missing activatedStates', function (done) {
+      var policy = `
+            for public  :
+              in active:
+                terminate`;
+
+      var result = compiler.compile(policy)
+      assert.equal(result.errorMsg, 'missing activatedStates')
+      done()
+    })
+
+    it('expecting proceed to or terminate', function (done) {
+      var policy = `
+            for public  :
+              in active:
+    `;
+
+      var result = compiler.compile(policy)
+      assert.equal(result.errorMsg, 'line 4: mismatched input \'<EOF>\' expecting {\'proceed to\', TERMINATE}')
+      done()
+    })
+
+    it('terminate state', function (done) {
+      var policy = `
+            for public  :
+              in <active>:
+                terminate
+    `;
+
+      var result = compiler.compile(policy)
+      assert.equal(result.errorMsg, null)
+      done()
+    })
+
+    it('period_event', function (done) {
+      var policy = `
+            for public  :
+              in <initial>:
+                proceed to <active>  on end of cycle
+    `;
+
+      var result = compiler.compile(policy)
+      assert.equal(result.errorMsg, null)
+      done()
+    })
+  })
+
+  describe('beautify policy', function () {
+    it('beautify single policy', function (done) {
+      var policy = `
+            for public,nodes  :
+                in initial :
+                proceed to      <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+              in <pending> :
+                       proceed to   pendingtwo on end of cycle
+              in pendingtwo :
+                proceed to <pending> on transaction of 100 to feth233dbc320699
+    `;
+
+      var result = compiler.beautify(policy)
+      assert.equal(result, fs.readFileSync(path.join(base, 'beautify'), 'utf8'))
+      done()
+    })
+
+    it('beautify terminate policy', function (done) {
+      var policy = `
+            for public  :
+              in <initial>:
+               TERMINATE
+    `;
+
+      var result = compiler.beautify(policy)
+      assert.equal(result, fs.readFileSync(path.join(base, 'terminate-beautify'), 'utf8'))
+      done()
+    })
+
+    it('beautify multi policies', function (done) {
+      var policy = `
 for nodes :
   in initial :
     proceed to <signing> on transaction of 100 to feth233dbc32069
@@ -30,38 +107,10 @@ for nodes :
       in <signing> :
         proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
 `
-var str3 =
-`
-  for nodes:
-    in initial :
-      proceed to pending on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-`
-   console.log('start gen');
-   var re = compiler.compile(str0, 'beautify');
-   console.log(re);
-  //  var str = re.stringArray.join(' ').replace(/\n\s/g,'\n');
-  //  console.log(str);
-   // var re2 = compiler.compile(str0);
-   // console.log(re2);
-   // if ( /^mismatched input/.test(re2.errorMsg) ) {
-   //   let end = re2.errorMsg.indexOf('expecting');
-   //   let result = re2.errorMsg.substring(17, end);
-   //   let suggestions = re2.errorMsg.substring(end+10)
-   //
-   //   console.log(result + 'is not matched, expected inputs are ' + suggestions);
-   // }
-// console.log(compiler.compile(string1));
-// console.log(compiler.compile(string1, 'beautify'));
-// console.log('users: ',re2.policy_segments[0].users);
-// console.log('activatedState', re2.policy_segments[0].activatedStates);
-// console.log('all_occured_states', re2.policy_segments[0].all_occured_states);
-// console.log('state_transition_table', re2.policy_segments[0].state_transition_table);
-   // console.log(compiler.compile(str8).policy_segments[0].segmentText);
-   // let aa  = compiler.compile(str8).policy_segments[0].segmentText
-   // console.log(aa);
-   // console.log(compiler.compile(str2, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
-   // console.log(re2.policy_segments[0].users);
-  //  console.log(re2.policy_segments[0].state_transition_table);
-  //  console.log(JSON.stringify(re2.policy_segments[0].state_transition_table));
 
-    // console.log(compiler.compile(str0, 'beautify').stringArray.splice(1).join(' ').replace(/\n\s/g,'\n'));
+      var result = compiler.beautify(policy)
+      assert.equal(result, fs.readFileSync(path.join(base, 'multi-beautify'), 'utf8'))
+      done()
+    })
+  })
+});

@@ -1,11 +1,13 @@
 {
   "name": "@freelog/resource-policy-compiler",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "resource policy compiler",
   "main": "lib/index.js",
   "dependencies": {
     "@freelog/resource-policy-lang": "latest",
     "gulp": "^3.9.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.0.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -13,6 +15,7 @@
     "babel-cli": "^6.26.0"
   },
   "scripts": {
+    "test": "istanbul test _mocha --report html -- test/*.js --reporter spec",
     "publish": "npm publish --access=public",
     "babel": "babel src -d lib"
   },
