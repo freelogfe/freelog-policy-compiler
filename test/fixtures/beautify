@@ -1,7 +1,7 @@
 for public , nodes : 
-   in initial : 
-       proceed to <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce 
-   in <pending> : 
-       proceed to pendingtwo on end of cycle 
-   in pendingtwo : 
-       proceed to <pending> on transaction of 100 to feth233dbc320699 
+  in initial : 
+    proceed to <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce 
+  in <pending> : 
+    proceed to pendingtwo on end of cycle 
+  in pendingtwo : 
+    proceed to <pending> on transaction of 100 to feth233dbc320699 

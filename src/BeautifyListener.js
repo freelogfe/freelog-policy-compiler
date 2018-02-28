@@ -10,7 +10,8 @@ class BeautifyListener extends resourcePolicyListener {
   }
 
   pushIndent(num) {
-    this.stringArray.push(BREAK_SPACE.repeat(num || 2))
+    num = (num === undefined) ? 2 : num
+    this.stringArray.push(BREAK_SPACE.repeat(num))
   }
 
   pushChildren(children) {
@@ -39,7 +40,7 @@ class BeautifyListener extends resourcePolicyListener {
     }
 
     this.stringArray.push('\n');
-    this.pushIndent()
+    this.pushIndent(1)
   }
 
   enterCurrent_state_clause(ctx) {
@@ -48,7 +49,7 @@ class BeautifyListener extends resourcePolicyListener {
 
   enterTarget_clause(ctx) {
     this.stringArray.push('\n');
-    this.pushIndent(6);
+    this.pushIndent(3);
 
     if (!checkExist('ID', ctx)) {
       this.stringArray.push(ctx.getText())
