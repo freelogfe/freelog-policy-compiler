@@ -1,6 +1,6 @@
 {
   "name": "@freelog/resource-policy-compiler",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "resource policy compiler",
   "main": "lib/index.js",
   "dependencies": {
@@ -12,6 +12,8 @@
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.0.1",
     "babel-cli": "^6.26.0"
   },
   "scripts": {
