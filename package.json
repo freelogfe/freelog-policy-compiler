@@ -4,10 +4,10 @@
   "description": "resource policy compiler",
   "main": "lib/index.js",
   "dependencies": {
-    "@freelog/resource-policy-lang": "latest",
+    "@freelog/resource-policy-lang": "0.0.8",
     "gulp": "^3.9.1",
     "istanbul": "^0.4.5",
-    "mocha": "^5.0.1",
+    "mocha": "^5.0.2",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
