@@ -1,4 +1,4 @@
-var {
+const {
   resourcePolicyLexer,
   resourcePolicyParser
 } = require('@freelog/resource-policy-lang');

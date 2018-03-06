@@ -1,8 +1,6 @@
-var {
-  resourcePolicyListener
-} = require('@freelog/resource-policy-lang');
-
+const {resourcePolicyListener} = require('@freelog/resource-policy-lang');
 let _ = require('underscore');
+const ACTIVE_REG = /^<.+>$/
 let initialFlag = false;
 let domainFlag = false;
 let individualFlag = false;
@@ -33,53 +31,68 @@ function genRandomStateName(evt1, evt2, evtName) {
   return 'autoGenratedState_' + evt1 + '_' + evt2 + '_' + evtName + '_' + (new Date * Math.random()).toString(36).substring(0, 4);
 }
 
+
 class JSONGeneratoListener extends resourcePolicyListener {
   constructor() {
     super();
     this.errorMsg = null;
     this.policy_segments = [];
   }
+  //统一处理segmentblock格式
+  formatSegmentBlock() {
+    let segment_block = this._segment_block
+    var users = {};
+    segment_block.users.forEach((info) => {
+      users[info.userType] = users[info.userType] || {userType: info.userType, users: []}
+      users[info.userType].users.push(info.users)
+    })
 
-  enterP(ctx) {
-  };
-
-  exitP(ctx) {
-  };
-
-  enterStart_hour(ctx) {
-  };
-
-  exitStart_hour(ctx) {
-  };
-
-  enterEnd_hour(ctx) {
-  };
-
-  exitEnd_hour(ctx) {
-  };
+    segment_block.users = Object.values(users)
+    segment_block.all_occured_states = Array.from(segment_block.all_occured_states);
+    segment_block.activatedStates = segment_block.all_occured_states.filter((state) => {
+      if (ACTIVE_REG.test(state)) {
+        return state;
+      }
+    });
+  }
 
   enterSegment(ctx) {
+    let originalInput = ctx.start.getInputStream().strdata;
+    let segmentText = originalInput.slice(ctx.start.start, ctx.stop.stop + 1);
+    segmentText = segmentText.replace(/[ \t\r\n]+/g, ' ');
     //对应一个segment
-    ctx.segment_block = {
-      segmentText: ctx.start.source[0]._input.strdata.slice(ctx.start.start, ctx.stop.stop + 1),
+    this._segment_block = {
+      segmentText: segmentText,
       initialState: '',
       terminateState: 'terminate',
       users: [],
-      states: [],
-      all_occured_states: [],
-      state_transition_table: []
+      states: [],//from state 所有启示state
+      all_occured_states: new Set(),
+      state_transition_table: [],
+      activatedStates: []
     };
   };
 
   exitSegment(ctx) {
-    if (ctx.segment_block.activatedStates === [] || !ctx.segment_block.activatedStates) {
+    let segment_block = this._segment_block
+
+    this.formatSegmentBlock()
+    if (!segment_block.activatedStates.length) {
       this.errorMsg = 'missing activatedStates'
     }
-    this.policy_segments.push(ctx.segment_block);
-    initialFlag = false;
-    domainFlag = false;
-    individualFlag = false;
-    groupFlag = false;
+
+    this.policy_segments.push(segment_block);
+
+    //临时变量
+    delete this._segment_block
+    delete this._events
+    delete this._current_state
+
+
+    // initialFlag = false;
+    // domainFlag = false;
+    // individualFlag = false;
+    // groupFlag = false;
   };
 
   // 留给下简化版
@@ -123,135 +136,81 @@ class JSONGeneratoListener extends resourcePolicyListener {
   //   }
   // };
   enterUsers(ctx) {
-    while (ctx.parentCtx) {
-      if (ctx.parentCtx.segment_block && ctx.parentCtx.segment_block.users) {
-        break;
-      }
-      ctx.parentCtx = ctx.parentCtx.parentCtx
-    }
-    ctx.segment_block = ctx.parentCtx.segment_block;
+    let segment_block = this._segment_block
     //是否手机或者邮箱地址
     let user = ctx.getText().toLowerCase();
 
-    let isGroupNode = /^group_node_[a-zA-Z0-9-]{4,20}$/.test(user);
+    const GROUP_NODE_REG = /^group_node_[a-zA-Z0-9-]{4,20}$/;
+    const GROUP_USER_REG = /^group_user_[a-zA-Z0-9-]{4,20}$/;
+    const DOMAIN_REG = /^[a-zA-Z0-9-]{4,24}$/;
+    let isGroupNode = GROUP_NODE_REG.test(user);
     let isNode = /nodes/.test(user.toLowerCase());
     let isPublic = /public/.test(user.toLowerCase());
-    let isGroupUser = /^group_user_[a-zA-Z0-9-]{4,20}$/.test(user);
-    let isDomain = /^[a-zA-Z0-9-]{4,24}$/.test(user);
+    let isGroupUser = GROUP_USER_REG.test(user);
+    let isDomain = DOMAIN_REG.test(user);
+
+
     let isSelf = /self/.test(user.toLowerCase());
     if (!( isGroupNode || isNode || isPublic || isGroupUser || isDomain || isSelf)) {
       return this.errorMsg = 'user format is not valid'
     }
     if (isGroupNode || isNode || isPublic || isGroupUser) {
-      if (!groupFlag) {
-        groupFlag = true;
-        ctx.segment_block.users.push({'userType': 'group', users: [user]})
-      } else {
-        ctx.segment_block.users.forEach((obj) => {
-          if (obj.userType == 'group') {
-            obj.users.push(user)
-          }
-        })
-      }
+        segment_block.users.push({'userType': 'group', users: user})
     } else if (isSelf) {
-      if (!individualFlag) {
-        individualFlag = true;
-        ctx.segment_block.users.push({'userType': 'individual', users: [user]})
-      } else {
-        ctx.segment_block.users.forEach((obj) => {
-          if (obj.userType == 'individual') {
-            obj.users.push(user)
-          }
-        })
-      }
+        segment_block.users.push({'userType': 'individual', users: user})
     } else if (isDomain) {
-      if (!domainFlag) {
-        domainFlag = true;
-        ctx.segment_block.users.push({'userType': 'domain', users: [user]})
-      } else {
-        ctx.segment_block.users.forEach((obj) => {
-          if (obj.userType == 'domain') {
-            obj.users.push(user)
-          }
-        })
-      }
+        segment_block.users.push({'userType': 'domain', users: user})
     }
-  };
-
-  exitUsers(ctx) {
-    ctx.parentCtx.segment_block = ctx.segment_block;
-  };
-
-  enterState_clause(ctx) {
-    ctx.segment_block = ctx.parentCtx.segment_block;
-  };
-
-  exitState_clause(ctx) {
-    ctx.parentCtx.segment_block = ctx.segment_block;
   };
 
   enterCurrent_state_clause(ctx) {
-    ctx.segment_block = ctx.parentCtx.segment_block;
-    if (!initialFlag) {
-      initialFlag = true;
-      ctx.segment_block.initialState = ctx.ID().getText();
-    }
 
-    ctx.segment_block.states.push(ctx.ID().getText());
-    ctx.segment_block.all_occured_states.push(ctx.ID().getText());
-    ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
+    let segment_block = this._segment_block
+    let state = ctx.ID().getText()
+    this._current_state = state;
+    segment_block.states.push(state);
+    segment_block.all_occured_states.add(state);
+
   };
 
-  exitCurrent_state_clause(ctx) {
-    ctx.parentCtx.segment_block = ctx.segment_block;
-  };
+  enterInitial_state_clause(ctx) {
+    let segment_block = this._segment_block
+    var state = ctx.children[1].getText();
+
+    segment_block.initialState = state
+    this._current_state = state
+    segment_block.states.push(state);
+    segment_block.all_occured_states.add(state);
+  }
 
   enterTarget_clause(ctx) {
-
-    ctx.segment_block = ctx.parentCtx.segment_block;
-
-    //重置state
-    ctx.current_state = ctx.parentCtx.current_state_clause().ID().getText();
-    if (ctx.current_state[0] === '<' && ctx.current_state[ctx.current_state.length - 1] === '>') {
-      ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
-      ctx.segment_block.activatedStates.push(ctx.current_state)
-      ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
-    }
+    let segment_block = this._segment_block
 
     if (ctx.getText().toLowerCase() !== 'terminate') {
-      //next_state
       ctx.next_state = ctx.ID().getText();
-      //activatedState
-      if (ctx.next_state[0] === '<' && ctx.next_state[ctx.next_state.length - 1] === '>') {
-        ctx.segment_block.activatedStates = ctx.segment_block.activatedStates || [];
-        ctx.segment_block.activatedStates.push(ctx.next_state)
-        ctx.segment_block.activatedStates = _.uniq(ctx.segment_block.activatedStates);
-      }
+      segment_block.all_occured_states.add(ctx.next_state);
     }
     //重置event
-    ctx.events = [];
-  };
+    this._events = []
+  }
 
   // Exit a parse tree produced by policyParser#target_clause.
   exitTarget_clause(ctx) {
-    let state_transition
-    if (ctx.events.length > 1) {
-      state_transition = {
-        currentState: ctx.current_state,
-        event: {
-          type: 'compoundEvents',
-          params: ctx.events
-        },
-        nextState: ctx.next_state
-      };
+    let segment_block = this._segment_block
+    let state_transition = {
+      currentState: this._current_state,
+      nextState: ctx.next_state
+    };
+
+    if (this._events.length > 1) {
+      state_transition.event = {
+        type: 'compoundEvents',
+        params: this._events
+      }
     } else {
-      state_transition = {
-        currentState: ctx.current_state,
-        event: ctx.events[0],
-        nextState: ctx.next_state
-      };
+      state_transition.event = this._events[0]
     }
-    ctx.segment_block.state_transition_table.push(state_transition);
+    segment_block.state_transition_table.push(state_transition);
     // //生成中间状态
     // let tempCurrent = ctx.current_state;
     // //permute当前events
@@ -276,78 +235,54 @@ class JSONGeneratoListener extends resourcePolicyListener {
     //   }
     // });
     //记录同一个curren_state 下的多个target
-    if (ctx.next_state) {
-      ctx.segment_block.all_occured_states.push(ctx.next_state);
-      ctx.segment_block.all_occured_states = _.uniq(ctx.segment_block.all_occured_states);
-    }
-    //回传
-    ctx.parentCtx.segment_block = ctx.segment_block;
-  };
 
-  enterEvent(ctx) {
-    ctx.events = ctx.parentCtx.events;
-  };
-
-  exitEvent(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
-  enterAnd_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-  };
-
-  exitAnd_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
   };
 
   enterPeriod_event(ctx) {
-    let timeUnit = ctx.time_unit().getText();
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+    let timeUnit = ctx.TIMEUNIT().getText();
+    this._events.push({
       type: 'period',
       params: [timeUnit],
-      eventName: 'period_' + timeUnit + '_event'
+      eventName: ['period', timeUnit, 'event'].join('_')
     });
-  };
-
-  exitPeriod_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
   };
 
   enterSpecific_date_event(ctx) {
-    let date = ctx.ID().getText();
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
-      type: 'arrivalDate',
-      params: [1, date],
-      eventName: 'arrivalDate_1_' + date + '_event'
-    });
-  };
+    if( ctx.DATE() && ctx.HOUR()) {
+      let datePattern = /^(?:19|20)[0-9][0-9]-(?:(?:0[1-9])|(?:1[0-2]))-(?:(?:[0-2][1-9])|(?:[1-3][0-1]))$/; //校验日期
+      let hourPattern = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/i; //校验时间，秒为可选
+      let date = ctx.DATE().getText();
+      let hour = ctx.HOUR().getText();
 
-  exitSpecific_date_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
+      if(datePattern.test(date) && hourPattern.test(hour)) {
+        this._events.push({
+          type: 'arrivalDate',
+          params: [1, `${date} ${hour}`],
+          eventName: ['arrivalDate_1', date, 'event'].join('_')
+        });
+      } else {
+        this.errorMsg = 'date format error';
+        return
+      }
+    }
   };
 
   enterRelative_date_event(ctx) {
-    let day = Number(ctx.INT().getText());
-    let unit = ctx.time_unit().getText();
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+
+    let day = Number(ctx.INTEGER_NUMBER().getText());
+    let unit = ctx.TIMEUNIT().getText();
+    unit = unit.replace(/s$/, '')
+    this._events.push({
       type: 'arrivalDate',
       params: [0, day, unit],
-      eventName: 'arrivalDate_0_' + day + '_' + unit + '_event'
+      eventName: ['arrivalDate_0', day, unit, 'event'].join('_')
     });
   };
 
-  exitRelative_date_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
   enterPricing_agreement_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+    this._events.push({
       type: 'pricingAgreement',
-      params: [tbd],
+      params: [],
       eventName: 'pricingAgreement'
     });
   };
@@ -357,50 +292,30 @@ class JSONGeneratoListener extends resourcePolicyListener {
   };
 
   enterTransaction_event(ctx) {
-
-    ctx.children.forEach((child) => {
-
-    })
     let transactionAmount = Number(ctx.INTEGER_NUMBER().getText());
     let account_id = ctx.FEATHERACCOUNT().getText();
 
-
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+    this._events.push({
       type: 'transaction',
       params: [account_id, transactionAmount],
-      eventName: 'transaction_' + account_id + '_' + transactionAmount + '_event'
+      eventName: ['transaction', account_id, transactionAmount, 'event'].join('_')
     });
-  };
-
-  exitTransaction_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
   };
 
   enterSigning_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    let tempLicenseIds = [];
-    _.each(ctx.license_resource_id(), (licensId) => {
-      tempLicenseIds.push(licensId.getText());
-    });
-    ctx.events.push({
+    let tempLicenseIds = ctx.license_resource_id().map((licensId) => {
+      return licensId.getText()
+    })
+
+    this._events.push({
       type: 'signing',
       params: tempLicenseIds,
       eventName: 'signing_' + tempLicenseIds.join('_')
     });
   };
 
-  exitSigning_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
 
-  enterGuaranty_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-  };
 
-  exitGuaranty_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
 
   enterContract_guaranty(ctx) {
     let amount = ctx.INT()[0].getText();
@@ -413,112 +328,43 @@ class JSONGeneratoListener extends resourcePolicyListener {
     });
   };
 
-  exitContract_guaranty(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
   enterPlatform_guaranty(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+    this._events.push({
       type: 'platformGuaranty',
-      params: [Number(ctx.INT().getText())],
+      params: [Number(ctx.INTEGER_NUMBER().getText())],
       eventName: 'platformGuaranty'
     });
   };
 
-  exitPlatform_guaranty(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
   enterSettlement_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+    this._events.push({
       type: 'accountSettled',
       params: []
     });
   };
 
-  exitSettlement_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
-  enterAccess_count_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-  };
-
-  exitAccess_count_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
   enterVisit_increment_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+    this._events.push({
       type: 'accessCountIncrement',
-      params: [Number(ctx.INT().getText())]
+      params: [Number(ctx.INTEGER_NUMBER().getText())]
     });
-  };
-
-  // Exit a parse tree produced by policyParser#visit_increment_event.
-  exitVisit_increment_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
   };
 
   enterVisit_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({
+    this._events.push({
       type: 'accessCount',
-      params: [Number(ctx.INT().getText())]
+      params: [Number(ctx.INTEGER_NUMBER().getText())]
     });
   };
 
-  exitVisit_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
-  enterBalance_event(ctx) {
-    ctx.events = ctx.parentCtx.events;
-  };
-
-  exitBalance_event(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
-  // Enter a parse tree produced by policyParser#balance_greater.
   enterBalance_greater(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({type: 'balance_smaller_event', params: ctx.getText()});
-  };
-
-  exitBalance_greater(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
+    this._events.push({type: 'balance_greater_event', params: ctx.INTEGER_NUMBER().getText()});
+  }
 
   enterBalance_smaller(ctx) {
-    ctx.events = ctx.parentCtx.events;
-    ctx.events.push({type: 'balance_greater_event', params: ctx.getText()});
-  };
+    this._events.push({type: 'balance_smaller_event', params: ctx.INTEGER_NUMBER().getText()});
+  }
 
-  exitBalance_smaller(ctx) {
-    ctx.parentCtx.events = ctx.events;
-  };
-
-  enterTime_unit(ctx) {
-  };
-
-  exitTime_unit(ctx) {
-  };
-
-  enterState(ctx) {
-  };
-
-  exitState(ctx) {
-  };
-
-  enterLicense_resource_id(ctx) {
-  };
-
-  exitLicense_resource_id(ctx) {
-  };
 }
 
 module.exports = JSONGeneratoListener;
