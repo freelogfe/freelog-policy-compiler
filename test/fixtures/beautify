@@ -4,4 +4,4 @@ for public , nodes :
   in <pending> : 
     proceed to pendingtwo on end of cycle 
   in pendingtwo : 
-    proceed to <pending> on transaction of 100 to feth233dbc320699 
+    proceed to <pending> on receiving transaction of 100 to feth233dbc320699 

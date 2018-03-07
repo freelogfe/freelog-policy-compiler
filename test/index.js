@@ -219,52 +219,54 @@ describe('resource-policy-compiler', function () {
 
   })
 
-//   describe('beautify policy', function () {
-//     it('beautify single policy', function (done) {
-//       var policy = `
-//             for public,nodes  :
-//                 in initial :
-//                 proceed to      <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-//               in <pending> :
-//                        proceed to   pendingtwo on end of cycle
-//               in pendingtwo :
-//                 proceed to <pending> on transaction of 100 to feth233dbc320699
-//     `;
-//
-//       var result = compiler.beautify(policy)
-//       assert.equal(result, fs.readFileSync(path.join(base, 'beautify'), 'utf8'))
-//       done()
-//     })
-//
-//     it('beautify terminate policy', function (done) {
-//       var policy = `
-//             for public  :
-//               in <initial>:
-//                TERMINATE
-//     `;
-//
-//       var result = compiler.beautify(policy)
-//       assert.equal(result, fs.readFileSync(path.join(base, 'terminate-beautify'), 'utf8'))
-//       done()
-//     })
-//
-//     it('beautify multi policies', function (done) {
-//       var policy = `
-// for nodes :
-//   in initial :
-//     proceed to <signing> on transaction of 100 to feth233dbc32069
-//   in <signing> :
-//     proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-//     for nodes :
-//       in initial :
-//         proceed to <signing> on transaction of 100 to feth233dbc32069
-//       in <signing> :
-//         proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-// `
-//
-//       var result = compiler.beautify(policy)
-//       assert.equal(result, fs.readFileSync(path.join(base, 'multi-beautify'), 'utf8'))
-//       done()
-//     })
-//   })
+  describe('beautify policy', function () {
+    it('beautify single policy', function (done) {
+      var policy = `
+            for public,nodes  :
+                in initial :
+                proceed to      <pending> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+              in <pending> :
+                       proceed to   pendingtwo on end of cycle
+              in pendingtwo :
+                proceed to <pending> on receiving transaction of 100 to feth233dbc320699
+    `;
+
+      var result = compiler.beautify(policy)
+      assert.equal(result, fs.readFileSync(path.join(base, 'beautify'), 'utf8'))
+      done()
+    })
+
+    it('beautify terminate policy', function (done) {
+      var policy = `
+            for public  :
+              in <initial>:
+               TERMINATE
+    `;
+
+      var result = compiler.beautify(policy)
+      assert.equal(result, fs.readFileSync(path.join(base, 'terminate-beautify'), 'utf8'))
+      done()
+    })
+
+    it('beautify multi policies', function (done) {
+      var policy = `
+for nodes :
+  in initial :
+    proceed to <signing> on receiving transaction of 100 to feth233dbc32069
+    proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+  in <signing> :
+    proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+    for nodes :
+      in initial :
+        proceed to <signing> on receiving transaction of 100 to feth233dbc32069
+      in <signing> :
+        proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+`
+
+      var result = compiler.beautify(policy)
+
+      assert.equal(result, fs.readFileSync(path.join(base, 'multi-beautify'), 'utf8'))
+      done()
+    })
+  })
 });
