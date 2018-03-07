@@ -1,11 +1,18 @@
 var assert = require('assert')
-var fs = require('fs')
+var fs = require('fs-extra')
 var path = require('path')
+const {diff} = require('deep-diff')
 var compiler = require('../src/index.js');
 var base = 'test/fixtures'
+var compileFixtures = path.join(base, 'compile')
 
 
 describe('resource-policy-compiler', function () {
+  function execJSONCompare(policy, target, done) {
+    var result = compiler.compile(policy)
+    assert.equal(undefined, diff(result, fs.readJSONSync(path.join(compileFixtures, target))))
+    done()
+  }
 
   describe('compile policy', function () {
     it('missing activatedStates', function (done) {
@@ -47,9 +54,44 @@ describe('resource-policy-compiler', function () {
                 terminate
     `;
 
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'terminate.json', done)
+    })
+
+
+    it('test user group', function (done) {
+      var policy = `
+            
+  for group_user_5a9f8b22ad98f000220a0317 :
+in <initial> :
+  terminate
+  
+  for group_user_aaaa :
+          in initial :
+            proceed to <signing> on receiving transaction of 100 to feth233dbc32069
+          in <signing> :
+            proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+
+    `;
+
+      execJSONCompare(policy, 'user_group.json', done)
+    })
+
+    it('test node group', function (done) {
+      var policy = `
+            
+  for group_node_5a9f8b22ad98f000220a0317 :
+in <initial> :
+  terminate
+  for group_node_aaaa :
+          in initial :
+            proceed to <signing> on receiving transaction of 100 to feth233dbc32069
+          in <signing> :
+            proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
+
+    `;
+
+      execJSONCompare(policy, 'node_group.json', done)
+
     })
 
     it('period_event', function (done) {
@@ -59,9 +101,7 @@ describe('resource-policy-compiler', function () {
                 proceed to <active>  on end of cycle
     `;
 
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'period_event.json', done)
     })
 
 
@@ -72,9 +112,7 @@ describe('resource-policy-compiler', function () {
                 proceed to <active> on receiving transaction of 100 to feth233dbc32069
     `;
 
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'transaction_event.json', done)
     })
 
     it('signing_event', function (done) {
@@ -84,9 +122,7 @@ describe('resource-policy-compiler', function () {
                 proceed to <active> on accepting license e759419923ea25bf6dff2694391a1e65c21739ce, e759419923ea25bf6dff2694391a1e65c21739ce
     `;
 
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'signing_event.json', done)
     })
 
 
@@ -97,9 +133,7 @@ describe('resource-policy-compiler', function () {
                 proceed to <active> at 2000-12-12 23:12:12
     `;
 
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'specific_date_event.json', done)
     })
 
     it('compile multi policy', function (done) {
@@ -118,30 +152,8 @@ describe('resource-policy-compiler', function () {
           in <B> :
             proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ba
         `
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
-    })
 
-    it('group_user and group node', function (done) {
-      var policy = `
-        for group_user_aaaa :
-          in initial :
-            proceed to <signing> on receiving transaction of 100 to feth233dbc32069
-          in <signing> :
-            proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ce
-
-        for group_node_aaaa :
-          in initial :
-            proceed to <A> on receiving transaction of 19999 to feth233dbc32081
-          in <A> :
-            proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ba
-          in <B> :
-            proceed to activate on accepting license e759419923ea25bf6dff2694391a1e65c21739ba
-        `
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'multi_policy.json', done)
     })
 
     it('test time unit', function (done) {
@@ -154,9 +166,7 @@ describe('resource-policy-compiler', function () {
             proceed to <active>  after 3 days of contract creation
             proceed to <active>  after 3 years of contract creation
         `
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'time_unit.json', done)
     })
 
 
@@ -166,9 +176,7 @@ describe('resource-policy-compiler', function () {
                 in initial:
                   proceed to <active>  on receiving transaction of 1999 to feth233dbc32081 and on accepting license e759419923ea25bf6dff2694391a1e65c21739ba
       `;
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+      execJSONCompare(policy, 'compound_events.json', done)
     })
 
     it('balance_smaller_event', function (done) {
@@ -177,9 +185,8 @@ describe('resource-policy-compiler', function () {
                 in <initial>:
                   proceed to <active>  on account_balance smaller than 1000
       `;
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+
+      execJSONCompare(policy, 'balance_smaller_event.json', done)
     })
 
     it('balance_greater_event', function (done) {
@@ -188,9 +195,8 @@ describe('resource-policy-compiler', function () {
         in <initial>:
           proceed to <active>  on account_balance greater than 8888
       `;
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+
+      execJSONCompare(policy, 'balance_greater_event.json', done)
     })
 
 
@@ -200,9 +206,8 @@ describe('resource-policy-compiler', function () {
                 in <initial>:
                   proceed to <active>  on visit_increment of 10000
       `;
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+
+      execJSONCompare(policy, 'visit_increment_event.json', done)
     })
 
     it('visit_event', function (done) {
@@ -211,9 +216,8 @@ describe('resource-policy-compiler', function () {
                 in <initial>:
                   proceed to <active>  on visit of 1000
       `;
-      var result = compiler.compile(policy)
-      assert.equal(result.errorMsg, null)
-      done()
+
+      execJSONCompare(policy, 'visit_event.json', done)
     })
 
 
