@@ -1,0 +1,1 @@
+{"errorMsg":null,"policy_segments":[{"segmentText":"for public : in <initial>: terminate","initialState":"<initial>","terminateState":"terminate","users":[{"userType":"group","users":["public"]}],"states":["<initial>"],"all_occured_states":["<initial>"],"state_transition_table":[{"currentState":"<initial>"}],"activatedStates":["<initial>"]}]}

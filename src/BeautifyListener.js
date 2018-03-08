@@ -43,7 +43,13 @@ class BeautifyListener extends resourcePolicyListener {
     this.pushIndent(1)
   }
 
+  enterInitial_state_clause(ctx) {
+    this.pushChildren(ctx.children)
+  }
+
   enterCurrent_state_clause(ctx) {
+    this.stringArray.push('\n');
+    this.pushIndent(1)
     this.pushChildren(ctx.children)
   }
 
