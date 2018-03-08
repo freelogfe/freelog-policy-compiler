@@ -242,7 +242,8 @@ in <initial> :
 
 
   })
-
+var os = require('os');
+nl = os.EOL;
   describe('beautify policy', function () {
     it('beautify single policy', function (done) {
       var policy = `
@@ -255,8 +256,8 @@ in <initial> :
                 proceed to <pending> on receiving transaction of 100 to feth233dbc320699
     `;
 
-      var result = compiler.beautify(policy)
-      assert.equal(result, fs.readFileSync(path.join(base, 'beautify'), 'utf8'))
+      var result = compiler.beautify(policy);
+      assert.equal(result.replace(/\s/g, ""), fs.readFileSync(path.join(base, 'beautify'), 'utf8').replace(/\s/g, ""))
       done()
     })
 
@@ -268,7 +269,7 @@ in <initial> :
     `;
 
       var result = compiler.beautify(policy)
-      assert.equal(result, fs.readFileSync(path.join(base, 'terminate-beautify'), 'utf8'))
+      assert.equal(result.replace(/\s/g, ""), fs.readFileSync(path.join(base, 'terminate-beautify'), 'utf8').replace(/\s/g, ""))
       done()
     })
 
@@ -289,7 +290,7 @@ for nodes :
 
       var result = compiler.beautify(policy)
 
-      assert.equal(result, fs.readFileSync(path.join(base, 'multi-beautify'), 'utf8'))
+      assert.equal(result.replace(/\s/g, ""), fs.readFileSync(path.join(base, 'multi-beautify'), 'utf8').replace(/\s/g, ""))
       done()
     })
   })
