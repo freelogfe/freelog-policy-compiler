@@ -27,7 +27,7 @@ describe('resource-policy-compiler', function () {
 
     it('must have initial state', function (done) {
       var policy = `
-              for public  :
+              for example1  :
                 in active:
                   terminate`;
 
@@ -91,6 +91,58 @@ in <initial> :
       execJSONCompare(policy, 'node_group.json', done)
 
     })
+
+
+        it('nodename-pure-number', function (done) {
+          var policy = `
+                for f10020524978540  :
+                  in <initial>:
+                    proceed to <active>  on end of cycle
+        `;
+
+        var result = compiler.compile(policy)
+        assert.equal(result.errorMsg, null)
+        done()
+        })
+
+
+        it('nodename-freelog', function (done) {
+          var policy = `
+                for freelog  :
+                  in <initial>:
+                    proceed to <active>  on end of cycle
+        `;
+
+        var result = compiler.compile(policy)
+        assert.equal(result.errorMsg, null)
+        done()
+        })
+
+
+        it('nodename-pure-words', function (done) {
+          var policy = `
+                for aaaaaaaaa  :
+                  in <initial>:
+                    proceed to <active>  on end of cycle
+        `;
+
+        var result = compiler.compile(policy)
+        assert.equal(result.errorMsg, null)
+        done()
+        })
+
+
+        it('nodename-word-number', function (done) {
+          var policy = `
+                for 1a002a00  :
+                  in <initial>:
+                    proceed to <active>  on end of cycle
+        `;
+
+        var result = compiler.compile(policy)
+        assert.equal(result.errorMsg, null)
+        done()
+        })
 
     it('period_event', function (done) {
       var policy = `

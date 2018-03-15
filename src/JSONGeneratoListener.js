@@ -1,10 +1,6 @@
 const {resourcePolicyListener} = require('@freelog/resource-policy-lang');
 let _ = require('underscore');
 const ACTIVE_REG = /^<.+>$/
-let initialFlag = false;
-let domainFlag = false;
-let individualFlag = false;
-let groupFlag = false;
 
 //排列
 permute.permArr = [];
@@ -93,7 +89,8 @@ class JSONGeneratoListener extends resourcePolicyListener {
   enterUsers(ctx) {
     let segment_block = this._segment_block
     //是否手机或者邮箱地址
-    let user = ctx.getText().toLowerCase();
+
+    let user = ctx.getText().toLowerCase() || ctx.INTEGER_NUMBER().getText();
 
     const GROUP_NODE_REG = /^group_node_[a-zA-Z0-9-]+$/;
     const GROUP_USER_REG = /^group_user_[a-zA-Z0-9-]+$/;
@@ -218,7 +215,7 @@ class JSONGeneratoListener extends resourcePolicyListener {
 
   enterTransaction_event(ctx) {
     let transactionAmount = Number(ctx.INTEGER_NUMBER().getText());
-    let account_id = ctx.FEATHERACCOUNT().getText();
+    let account_id = ctx.ID().getText();
 
     this._events.push({
       type: 'transaction',
