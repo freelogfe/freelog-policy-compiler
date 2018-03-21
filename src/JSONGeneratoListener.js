@@ -217,6 +217,11 @@ class JSONGeneratoListener extends resourcePolicyListener {
     let transactionAmount = Number(ctx.INTEGER_NUMBER().getText());
     let account_id = ctx.ID().getText();
 
+    let REG = /f[0-9a-zA-Z]{14}$/
+    if(!REG.test(account_id)) {
+          return this.errorMsg = 'FEATHERACCOUNT not valid'
+    }
+
     this._events.push({
       type: 'transaction',
       params: [account_id, transactionAmount],
